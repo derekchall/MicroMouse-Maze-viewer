@@ -628,7 +628,32 @@
             }
         }
 
-        window.onload = renderMaze;
+        // ==========================================
+        // EXTERNAL GITHUB URL LOADING (The 5 lines!)
+        // ==========================================
+        const urlParams = new URLSearchParams(window.location.search);
+        const mazeUrl = urlParams.get('maze');
+
+        if (mazeUrl) {
+            fetch(mazeUrl)
+                .then(response => {
+                    if (!response.ok) throw new Error("Could not load file");
+                    return response.text();
+                })
+                .then(text => {
+                    mazeInput.value = text;
+                    fileNameDisplay.innerHTML = `Loaded from URL: <span>${mazeUrl.split('/').pop().split('?')[0]}</span>`;
+                    fileNameDisplay.style.display = 'block';
+                    renderMaze();
+                })
+                .catch(err => {
+                    alert("Error loading maze from URL: " + err.message);
+                    renderMaze();
+                });
+        } else {
+            // Load normally (blank)
+            window.onload = renderMaze;
+        }
     </script>
 </body>
 </html>
