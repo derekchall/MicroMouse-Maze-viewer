@@ -69,8 +69,18 @@
             border-top: 1px solid #e1e4e8;
             color: #24292e;
             font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+            font-size: 13px;
+            line-height: 1.4;
             font-weight: 600;
             word-break: break-all;
+        }
+        #file-name-display a {
+            color: #0366d6;
+            text-decoration: none;
+            font-weight: 400;
+        }
+        #file-name-display a:hover {
+            text-decoration: underline;
         }
 
         textarea {
@@ -178,7 +188,7 @@
         let activeErrorIndex = -1;
         let lastRenderedText = "";
         let isSelectionClick = false;
-        let currentFileNameError = null; // Holds the file name error if one exists
+        let currentFileNameError = null; 
 
         window.selectError = function(idx) {
             if (activeErrorIndex === idx) {
@@ -195,7 +205,7 @@
         mazeInput.addEventListener('input', function() {
             if (this.value.trim() === '') {
                 fileNameDisplay.style.display = 'none';
-                currentFileNameError = null; // Clear the file error state
+                currentFileNameError = null; 
                 renderMaze();
             }
         });
@@ -239,8 +249,8 @@
                 return;
             }
 
-            // FILE NAME VALIDATION (Letters, numbers, hyphens, underscores)
-            const baseName = file.name.slice(0, -4); // Remove .txt
+            // FILE NAME VALIDATION 
+            const baseName = file.name.slice(0, -4); 
             if (!/^[a-zA-Z0-9\-_]+$/.test(baseName)) {
                 currentFileNameError = `File name '${file.name}' contains invalid characters. Only letters, numbers, hyphens, and underscores are allowed.`;
             } else {
@@ -390,11 +400,10 @@
             let goalCount = 0;
             let startCount = 0;
 
-            // Push File Name Error (if any) first
             if (currentFileNameError) {
                 errors.push({
                     msg: currentFileNameError,
-                    draw: null // File name error doesn't highlight a place on the canvas
+                    draw: null 
                 });
             }
 
@@ -417,7 +426,6 @@
                 });
             }
 
-            // 1. Character Validation 
             for (let r = 0; r <= rows * 2; r++) {
                 const line = lines[r] || '';
                 const expectedLen = cols * 4 + 1;
@@ -492,7 +500,6 @@
                 }
             }
 
-            // 2. Perimeter Validation
             for (let c = 0; c < cols; c++) {
                 if (lines[0].substring(c*4 + 1, c*4 + 4) !== '---') pushMissingWall(`Missing Top perimeter wall (Col ${c})`, c, 0, 'top');
                 if (lines[rows*2].substring(c*4 + 1, c*4 + 4) !== '---') pushMissingWall(`Missing Bottom perimeter wall (Col ${c})`, c, rows-1, 'bottom');
@@ -502,7 +509,6 @@
                 if (lines[r*2 + 1].charAt(cols*4) !== '|') pushMissingWall(`Missing Right perimeter wall (Row ${r})`, cols-1, r, 'right');
             }
 
-            // 3. Goal & Start Counting
             for (let r = 0; r < rows; r++) {
                 for (let c = 0; c < cols; c++) {
                     const cellChar = lines[r*2 + 1].charAt(c*4 + 2);
@@ -556,7 +562,6 @@
                 });
             }
 
-            // 4. Illegal Posts
             for (let r = 0; r <= rows; r++) {
                 for (let c = 0; c <= cols; c++) {
                     let hasWall = false;
@@ -593,7 +598,6 @@
                 }
             }
 
-            // --- Draw Error Overlays ---
             function getHighlightColors(idx) {
                 if (activeErrorIndex === -1) {
                     return { fill: 'rgba(255, 221, 0, 0.7)', stroke: 'rgba(255, 221, 0, 0.9)' };
@@ -613,7 +617,6 @@
                 errors[activeErrorIndex].draw(ctx, getHighlightColors(activeErrorIndex));
             }
 
-            // --- Update UI Panel ---
             validationPanel.style.display = 'block';
             if (errors.length === 0) {
                 validationPanel.className = 'valid';
@@ -629,12 +632,18 @@
         }
 
         // ==========================================
-        // EXTERNAL GITHUB URL LOADING (The 5 lines!)
+        // EXTERNAL GITHUB URL LOADING (Auto-Fixer + Full Link)
         // ==========================================
         const urlParams = new URLSearchParams(window.location.search);
-        const mazeUrl = urlParams.get('maze');
+        let mazeUrl = urlParams.get('maze');
+        let displayUrl = mazeUrl; // Save original URL for displaying
 
         if (mazeUrl) {
+            // AUTO-FIX: Convert standard GitHub URLs to Raw URLs so they don't crash
+            if (mazeUrl.includes('github.com') && mazeUrl.includes('/blob/')) {
+                mazeUrl = mazeUrl.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
+            }
+
             fetch(mazeUrl)
                 .then(response => {
                     if (!response.ok) throw new Error("Could not load file");
@@ -642,17 +651,17 @@
                 })
                 .then(text => {
                     mazeInput.value = text;
-                    fileNameDisplay.innerHTML = `Loaded from URL: <span>${mazeUrl.split('/').pop().split('?')[0]}</span>`;
+                    
+                    // Show the FULL clickable link the user originally provided
+                    fileNameDisplay.innerHTML = `Loaded from URL:<br><a href="${displayUrl}" target="_blank" rel="noopener noreferrer">${displayUrl}</a>`;
                     fileNameDisplay.style.display = 'block';
+                    
                     renderMaze();
                 })
                 .catch(err => {
-                    alert("Error loading maze from URL: " + err.message);
+                    alert("Error loading maze from URL: " + err.message + "\nMake sure it is a valid direct text file link.");
                     renderMaze();
                 });
-        } else {
-            // Load normally (blank)
-            window.onload = renderMaze;
         }
     </script>
 </body>
