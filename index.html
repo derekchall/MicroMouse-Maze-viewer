@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Micromouse Maze Viewer & Validator</title>
+    <!-- Custom Maze Favicon (SVG) -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='black'/><path d='M10 10h80v80H10zM50 10v40h40M10 50h40v40' stroke='red' stroke-width='10' fill='none'/><rect x='44' y='44' width='12' height='12' fill='white'/><rect x='4' y='4' width='12' height='12' fill='white'/><rect x='84' y='4' width='12' height='12' fill='white'/><rect x='4' y='84' width='12' height='12' fill='white'/><rect x='84' y='84' width='12' height='12' fill='white'/></svg>">
+    <style>
+        :root {
+            --bg: #f6f8fa;
+            --border: #e1e4e8;
+            --btn: #2ea44f;
+            --btn-hover: #2c974b;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--bg);
+            color: #24292e;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+        .panel {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .sidebar {
+            flex: 0 0 auto; 
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        h1 { margin: 0; font-size: 1.5rem; }
+        p { margin: 0; color: #586069; font-size: 0.9rem; line-height: 1.4; max-width: calc(66ch + 36px); }
+        
+        .drop-zone {
+            border: 2px dashed #babbbd;
+            border-radius: 6px;
+            padding: 20px;
+            text-align: center;
+            background: #fafbfc;
+            color: #586069;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+        .drop-zone.dragover {
+            background: #e1edf8;
+            border-color: #0366d6;
+            color: #0366d6;
+        }
+        .file-label {
+            color: #0366d6;
+            cursor: pointer;
+            text-decoration: underline;
+            font-weight: 600;
+        }
+        
+        #file-name-display {
+            display: none;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #e1e4e8;
+            color: #24292e;
+            font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+            font-weight: 600;
+            word-break: break-all;
+        }
+
+        textarea {
+            width: calc(66ch + 36px); 
+            height: 300px;
+            font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+            font-size: 12px;
+            line-height: 1.2;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            resize: vertical;
+            box-sizing: border-box;
+            white-space: pre;
+            overflow-x: auto;
+            background: #fafbfc;
+        }
+        button {
+            background-color: var(--btn);
+            color: white;
+            border: none;
+            padding: 12px 15px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        button:hover { background-color: var(--btn-hover); }
+        
+        #validation-panel {
+            padding: 15px;
+            border-radius: 6px;
+            font-size: 14px;
+            display: none; 
+            max-width: calc(66ch + 6px);
+        }
+        .valid { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .invalid { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        
+        /* Interactive Clickable Error Styles */
+        .error-list { margin: 8px 0 0 0; padding: 0; font-size: 13px; }
+        .error-item {
+            cursor: pointer;
+            padding: 5px 8px;
+            margin-bottom: 4px;
+            border-radius: 4px;
+            list-style-type: none;
+            border-left: 3px solid transparent;
+            transition: all 0.2s ease;
+            background-color: rgba(255, 255, 255, 0.4);
+        }
+        .error-item:hover {
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+        .error-item.active-error {
+            background-color: #fff;
+            color: #721c24;
+            font-weight: bold;
+            border-left: 4px solid #00ffff; /* Cyan Marker */
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .canvas-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #ffffff; 
+        }
+        canvas {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="panel sidebar">
+        <h1>Micromouse Maze Viewer</h1>
+        
+        <div id="drop-zone" class="drop-zone">
+            <strong>Drag & Drop</strong> a maze .txt file here<br>
+            or <label for="file-upload" class="file-label">Browse Local Files</label>
+            <input type="file" id="file-upload" accept=".txt" style="display: none;">
+            
+            <div id="file-name-display"></div>
+        </div>
+
+        <textarea id="maze-input" spellcheck="false"></textarea>
+        <button onclick="renderMaze()">Render & Validate Maze</button>
+        
+        <div id="validation-panel"></div>
+    </div>
+
+    <div class="panel canvas-container">
+        <canvas id="maze-canvas" width="600" height="600"></canvas>
+    </div>
+
+    <script>
+        const mazeInput = document.getElementById('maze-input');
+        const fileNameDisplay = document.getElementById('file-name-display');
+
+        // Interactive Error State Variables
+        let activeErrorIndex = -1;
+        let lastRenderedText = "";
+        let isSelectionClick = false;
+        let currentFileNameError = null; // Holds the file name error if one exists
+
+        window.selectError = function(idx) {
+            if (activeErrorIndex === idx) {
+                activeErrorIndex = -1;
+            } else {
+                activeErrorIndex = idx;
+            }
+            isSelectionClick = true;
+            renderMaze(); 
+            isSelectionClick = false;
+        };
+
+        // Instantly clear the canvas (and hide file name) if user deletes the text
+        mazeInput.addEventListener('input', function() {
+            if (this.value.trim() === '') {
+                fileNameDisplay.style.display = 'none';
+                currentFileNameError = null; // Clear the file error state
+                renderMaze();
+            }
+        });
+
+        // ==========================================
+        // DRAG AND DROP ENGINE
+        // ==========================================
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-upload');
+
+        function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
+        const preventEvents =['dragenter', 'dragover', 'dragleave', 'drop'];
+        preventEvents.forEach(eventName => {
+            document.body.addEventListener(eventName, preventDefaults, false);
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        const highlightEvents =['dragenter', 'dragover'];
+        highlightEvents.forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.add('dragover'), false);
+        });
+
+        const unhighlightEvents =['dragleave', 'drop'];
+        unhighlightEvents.forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.remove('dragover'), false);
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            if (dt.files.length > 0) handleFile(dt.files[0]);
+        }, false);
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) handleFile(e.target.files[0]);
+            fileInput.value = ''; 
+        });
+
+        function handleFile(file) {
+            if (!file.name.toLowerCase().endsWith('.txt')) {
+                alert("Error: Only .txt files are allowed.");
+                return;
+            }
+
+            // FILE NAME VALIDATION (Letters, numbers, hyphens, underscores)
+            const baseName = file.name.slice(0, -4); // Remove .txt
+            if (!/^[a-zA-Z0-9\-_]+$/.test(baseName)) {
+                currentFileNameError = `File name '${file.name}' contains invalid characters. Only letters, numbers, hyphens, and underscores are allowed.`;
+            } else {
+                currentFileNameError = null;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const content = e.target.result;
+                if (content.charAt(0) !== 'o' && content.charAt(0) !== '+') {
+                    alert("Error: Not a valid maze file. The file must start with the letter 'o' (or '+').");
+                    return;
+                }
+                mazeInput.value = content;
+                
+                // Show the file name visually in the drop zone
+                fileNameDisplay.innerHTML = `Loaded: <span>${file.name}</span>`;
+                fileNameDisplay.style.display = 'block';
+
+                renderMaze();
+            };
+            reader.readAsText(file);
+        }
+
+        // ==========================================
+        // RENDERING & VALIDATION ENGINE
+        // ==========================================
+        function renderMaze() {
+            let text = mazeInput.value;
+            const canvas = document.getElementById('maze-canvas');
+            const ctx = canvas.getContext('2d');
+            const validationPanel = document.getElementById('validation-panel');
+
+            // Reset active selection if the text was changed
+            if (!isSelectionClick) {
+                if (text !== lastRenderedText) {
+                    activeErrorIndex = -1;
+                    lastRenderedText = text;
+                }
+            }
+
+            if (text.trim() === '') {
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                validationPanel.style.display = 'none';
+                return;
+            }
+            
+            if (text.includes('+')) {
+                text = text.replace(/\+/g, 'o');
+                mazeInput.value = text;
+                lastRenderedText = text;
+                setTimeout(() => alert("Detected '+' characters used as posts. They have been automatically converted to 'o'."), 10);
+            }
+
+            let lines = text.split('\n');
+            const startIndex = lines.findIndex(l => l.includes('o'));
+            if (startIndex === -1) {
+                validationPanel.style.display = 'block';
+                validationPanel.className = 'invalid';
+                validationPanel.innerHTML = `<strong>❌ Error:</strong> Not a valid maze format. No post characters ('o') found.`;
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                return;
+            }
+
+            lines = lines.slice(startIndex);
+            while (lines.length > 0 && lines[lines.length - 1].trim() === '') { lines.pop(); }
+            lines = lines.map(l => l.trimEnd());
+            
+            const maxLength = Math.max(...lines.map(l => l.length));
+            lines = lines.map(l => l.padEnd(maxLength, ' '));
+
+            const cols = Math.floor((maxLength - 1) / 4);
+            const rows = Math.floor((lines.length - 1) / 2);
+            
+            const cellSize = 40;
+            const padding = 40; 
+            
+            canvas.width = cols * cellSize + padding * 2;
+            canvas.height = rows * cellSize + padding * 2;
+
+            // --- Draw Base Maze ---
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const halfCell = cellSize / 2;
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(padding - halfCell, padding - halfCell, (cols * cellSize) + cellSize, (rows * cellSize) + cellSize);
+
+            ctx.strokeStyle = '#2a2a2a'; 
+            ctx.lineWidth = 1;
+            for (let r = 0; r <= rows; r++) {
+                ctx.beginPath(); ctx.moveTo(padding, padding + r * cellSize); ctx.lineTo(padding + cols * cellSize, padding + r * cellSize); ctx.stroke();
+            }
+            for (let c = 0; c <= cols; c++) {
+                ctx.beginPath(); ctx.moveTo(padding + c * cellSize, padding); ctx.lineTo(padding + c * cellSize, padding + rows * cellSize); ctx.stroke();
+            }
+
+            for (let r = 0; r < rows; r++) {
+                const rowTextCell = lines[r * 2 + 1] || '';
+                for (let c = 0; c < cols; c++) {
+                    const centerChar = rowTextCell.charAt(c * 4 + 2);
+                    const x = padding + c * cellSize;
+                    const y = padding + r * cellSize;
+                    if (centerChar === 'S') {
+                        ctx.fillStyle = '#d4edda'; ctx.fillRect(x, y, cellSize, cellSize);
+                        ctx.fillStyle = '#155724'; ctx.font = "bold 20px Arial"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText("S", x + cellSize / 2, y + cellSize / 2);
+                    } else if (centerChar === 'G') {
+                        ctx.fillStyle = '#e8d4ed'; ctx.fillRect(x, y, cellSize, cellSize);
+                        ctx.fillStyle = '#4a1557'; ctx.font = "bold 20px Arial"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText("G", x + cellSize / 2, y + cellSize / 2);
+                    }
+                }
+            }
+
+            ctx.strokeStyle = '#ff0000';
+            ctx.lineWidth = 5; 
+            ctx.lineCap = 'square';
+            ctx.beginPath();
+            for (let r = 0; r < rows; r++) {
+                const rowTextPost = lines[r * 2] || '';
+                const rowTextCell = lines[r * 2 + 1] || '';
+                const rowTextPostNext = lines[r * 2 + 2] || '';
+                for (let c = 0; c < cols; c++) {
+                    const topStr = rowTextPost.substring(c * 4 + 1, c * 4 + 4);
+                    const bottomStr = rowTextPostNext.substring(c * 4 + 1, c * 4 + 4);
+                    const leftChar = rowTextCell.charAt(c * 4);
+                    const rightChar = rowTextCell.charAt(c * 4 + 4);
+                    const x = padding + c * cellSize; const y = padding + r * cellSize;
+                    if (topStr === '---') { ctx.moveTo(x, y); ctx.lineTo(x + cellSize, y); }
+                    if (leftChar === '|') { ctx.moveTo(x, y); ctx.lineTo(x, y + cellSize); }
+                    if (r === rows - 1 && bottomStr === '---') { ctx.moveTo(x, y + cellSize); ctx.lineTo(x + cellSize, y + cellSize); }
+                    if (c === cols - 1 && rightChar === '|') { ctx.moveTo(x + cellSize, y); ctx.lineTo(x + cellSize, y + cellSize); }
+                }
+            }
+            ctx.stroke();
+
+            ctx.fillStyle = '#ffffff';
+            for (let r = 0; r <= rows; r++) {
+                for (let c = 0; c <= cols; c++) {
+                    ctx.fillRect((padding + c * cellSize) - 2.5, (padding + r * cellSize) - 2.5, 5, 5);
+                }
+            }
+
+            // --- Error Processing ---
+            let errors =[];
+            let goalCount = 0;
+            let startCount = 0;
+
+            // Push File Name Error (if any) first
+            if (currentFileNameError) {
+                errors.push({
+                    msg: currentFileNameError,
+                    draw: null // File name error doesn't highlight a place on the canvas
+                });
+            }
+
+            function pushMissingWall(msg, c, r, edge) {
+                errors.push({
+                    msg: msg,
+                    draw: (ctx, colors) => {
+                        ctx.strokeStyle = colors.stroke; 
+                        ctx.lineWidth = 6; 
+                        ctx.setLineDash([6, 4]);
+                        ctx.beginPath();
+                        const x = padding + c * cellSize; const y = padding + r * cellSize;
+                        if (edge === 'top') { ctx.moveTo(x, y); ctx.lineTo(x + cellSize, y); }
+                        else if (edge === 'bottom') { ctx.moveTo(x, y + cellSize); ctx.lineTo(x + cellSize, y + cellSize); }
+                        else if (edge === 'left') { ctx.moveTo(x, y); ctx.lineTo(x, y + cellSize); }
+                        else if (edge === 'right') { ctx.moveTo(x + cellSize, y); ctx.lineTo(x + cellSize, y + cellSize); }
+                        ctx.stroke();
+                        ctx.setLineDash([]); 
+                    }
+                });
+            }
+
+            // 1. Character Validation 
+            for (let r = 0; r <= rows * 2; r++) {
+                const line = lines[r] || '';
+                const expectedLen = cols * 4 + 1;
+                
+                if (line.length > expectedLen) {
+                    const trailing = line.substring(expectedLen);
+                    if (trailing.trim().length > 0) {
+                        errors.push({
+                            msg: `Extra illegal characters found at end of line ${r + 1}: '${trailing.trim()}'`,
+                            draw: (ctx, colors) => {
+                                const cy = padding + (r / 2) * cellSize;
+                                ctx.fillStyle = colors.fill;
+                                ctx.fillRect(padding + cols * cellSize + 10, cy - 8, 20, 16);
+                            }
+                        });
+                    }
+                }
+
+                if (r % 2 === 0) { 
+                    for (let c = 0; c <= cols; c++) {
+                        const postChar = line.charAt(c * 4);
+                        if (postChar !== 'o') {
+                            const disp = postChar === ' ' ? 'Space' : postChar;
+                            errors.push({
+                                msg: `Illegal character at post position (Row ${r/2}, Col ${c}). Expected 'o', found '${disp}'.`,
+                                draw: (ctx, colors) => {
+                                    ctx.fillStyle = colors.fill;
+                                    ctx.fillRect((padding + c * cellSize) - 8, (padding + (r/2) * cellSize) - 8, 16, 16);
+                                }
+                            });
+                        }
+                    }
+                    for (let c = 0; c < cols; c++) {
+                        const hw = line.substring(c * 4 + 1, c * 4 + 4);
+                        if (hw !== '---' && hw !== '   ') {
+                            errors.push({
+                                msg: `Illegal horizontal wall format between Col ${c} and ${c+1}. Found '${hw}'.`,
+                                draw: (ctx, colors) => {
+                                    ctx.fillStyle = colors.fill;
+                                    ctx.fillRect(padding + c * cellSize + 8, padding + (r/2) * cellSize - 6, cellSize - 16, 12);
+                                }
+                            });
+                        }
+                    }
+                } else { 
+                    const rowIdx = (r - 1) / 2;
+                    for (let c = 0; c <= cols; c++) {
+                        const vwChar = line.charAt(c * 4);
+                        if (vwChar !== '|' && vwChar !== ' ') {
+                            const disp = vwChar === ' ' ? 'Space' : vwChar;
+                            errors.push({
+                                msg: `Illegal vertical wall character at Row ${rowIdx}, Col ${c}. Found '${disp}'.`,
+                                draw: (ctx, colors) => {
+                                    ctx.fillStyle = colors.fill;
+                                    ctx.fillRect(padding + c * cellSize - 6, padding + rowIdx * cellSize + 8, 12, cellSize - 16);
+                                }
+                            });
+                        }
+                    }
+                    for (let c = 0; c < cols; c++) {
+                        const cellStr = line.substring(c * 4 + 1, c * 4 + 4);
+                        if (cellStr !== '   ' && cellStr !== ' S ' && cellStr !== ' G ') {
+                            errors.push({
+                                msg: `Illegal cell content at Row ${rowIdx}, Col ${c}. Found '${cellStr}'.`,
+                                draw: (ctx, colors) => {
+                                    ctx.fillStyle = colors.fill;
+                                    ctx.fillRect(padding + c * cellSize + 4, padding + rowIdx * cellSize + 4, cellSize - 8, cellSize - 8);
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+
+            // 2. Perimeter Validation
+            for (let c = 0; c < cols; c++) {
+                if (lines[0].substring(c*4 + 1, c*4 + 4) !== '---') pushMissingWall(`Missing Top perimeter wall (Col ${c})`, c, 0, 'top');
+                if (lines[rows*2].substring(c*4 + 1, c*4 + 4) !== '---') pushMissingWall(`Missing Bottom perimeter wall (Col ${c})`, c, rows-1, 'bottom');
+            }
+            for (let r = 0; r < rows; r++) {
+                if (lines[r*2 + 1].charAt(0) !== '|') pushMissingWall(`Missing Left perimeter wall (Row ${r})`, 0, r, 'left');
+                if (lines[r*2 + 1].charAt(cols*4) !== '|') pushMissingWall(`Missing Right perimeter wall (Row ${r})`, cols-1, r, 'right');
+            }
+
+            // 3. Goal & Start Counting
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    const cellChar = lines[r*2 + 1].charAt(c*4 + 2);
+                    if (cellChar === 'S') {
+                        startCount++;
+                        if (lines[r*2 + 1].charAt(c*4 + 4) !== '|') pushMissingWall(`Start cell at Row ${r}, Col ${c} is missing an East wall`, c, r, 'right');
+                    } else if (cellChar === 'G') {
+                        goalCount++;
+                    }
+                }
+            }
+
+            const bottomLeftChar = lines[(rows-1)*2 + 1]?.charAt(2);
+            if (bottomLeftChar !== 'S') {
+                errors.push({
+                    msg: `Missing 'S' in the start cell (bottom-left corner).`,
+                    draw: (ctx, colors) => {
+                        ctx.fillStyle = colors.fill;
+                        ctx.fillRect(padding, padding + (rows-1) * cellSize, cellSize, cellSize);
+                    }
+                });
+            }
+            if (startCount > 1) {
+                errors.push({ msg: `Found ${startCount} start ('S') cells. There must be exactly 1.`, draw: null });
+            }
+
+            if (goalCount !== 4) {
+                errors.push({ msg: `Found ${goalCount} goal ('G') cells, but there must be exactly 4.`, draw: null });
+            }
+
+            const r1 = Math.floor(rows / 2) - 1;
+            const r2 = Math.floor(rows / 2);
+            const c1 = Math.floor(cols / 2) - 1;
+            const c2 = Math.floor(cols / 2);
+            let centerGoalsValid = false;
+            if (r1 >= 0 && c1 >= 0) {
+                if (lines[r1*2+1]?.charAt(c1*4+2) === 'G' && lines[r1*2+1]?.charAt(c2*4+2) === 'G' && 
+                    lines[r2*2+1]?.charAt(c1*4+2) === 'G' && lines[r2*2+1]?.charAt(c2*4+2) === 'G') {
+                    centerGoalsValid = true;
+                }
+            }
+            if (!centerGoalsValid) {
+                errors.push({
+                    msg: "The 4 goal ('G') cells must be located exactly in the 2x2 center of the maze.",
+                    draw: (ctx, colors) => {
+                        if (r1 >= 0 && c1 >= 0) {
+                            ctx.fillStyle = colors.fill;
+                            ctx.fillRect(padding + c1 * cellSize, padding + r1 * cellSize, cellSize*2, cellSize*2);
+                        }
+                    }
+                });
+            }
+
+            // 4. Illegal Posts
+            for (let r = 0; r <= rows; r++) {
+                for (let c = 0; c <= cols; c++) {
+                    let hasWall = false;
+                    if (r > 0 && lines[r*2 - 1].charAt(c*4) === '|') hasWall = true;
+                    if (r < rows && lines[r*2 + 1].charAt(c*4) === '|') hasWall = true;
+                    if (c > 0 && lines[r*2].substring(c*4 - 3, c*4) === '---') hasWall = true;
+                    if (c < cols && lines[r*2].substring(c*4 + 1, c*4 + 4) === '---') hasWall = true;
+
+                    let isGoalPost = false;
+                    if (r > 0 && r < rows && c > 0 && c < cols) {
+                        if (lines[(r-1)*2+1].charAt((c-1)*4+2) === 'G' && lines[(r-1)*2+1].charAt(c*4+2) === 'G' && 
+                            lines[r*2+1].charAt((c-1)*4+2) === 'G' && lines[r*2+1].charAt(c*4+2) === 'G') {
+                            isGoalPost = true;
+                        }
+                    }
+
+                    if (isGoalPost && hasWall) {
+                        errors.push({
+                            msg: `Illegal wall connected to the Goal Post at Row ${r}, Col ${c}`,
+                            draw: (ctx, colors) => {
+                                ctx.fillStyle = colors.fill; 
+                                ctx.beginPath(); ctx.arc(padding + c * cellSize, padding + r * cellSize, 12, 0, 2*Math.PI); ctx.fill();
+                            }
+                        });
+                    } else if (!hasWall && !isGoalPost) {
+                        errors.push({
+                            msg: `Illegal freestanding post at Row ${r}, Col ${c}`,
+                            draw: (ctx, colors) => {
+                                ctx.fillStyle = colors.fill; 
+                                ctx.beginPath(); ctx.arc(padding + c * cellSize, padding + r * cellSize, 10, 0, 2*Math.PI); ctx.fill();
+                            }
+                        });
+                    }
+                }
+            }
+
+            // --- Draw Error Overlays ---
+            function getHighlightColors(idx) {
+                if (activeErrorIndex === -1) {
+                    return { fill: 'rgba(255, 221, 0, 0.7)', stroke: 'rgba(255, 221, 0, 0.9)' };
+                } else if (activeErrorIndex === idx) {
+                    return { fill: 'rgba(0, 255, 255, 0.8)', stroke: 'rgba(0, 255, 255, 1.0)' }; 
+                } else {
+                    return { fill: 'rgba(255, 221, 0, 0.05)', stroke: 'rgba(255, 221, 0, 0.1)' }; 
+                }
+            }
+
+            errors.forEach((err, idx) => {
+                if (activeErrorIndex !== idx && err.draw) {
+                    err.draw(ctx, getHighlightColors(idx));
+                }
+            });
+            if (activeErrorIndex !== -1 && errors[activeErrorIndex] && errors[activeErrorIndex].draw) {
+                errors[activeErrorIndex].draw(ctx, getHighlightColors(activeErrorIndex));
+            }
+
+            // --- Update UI Panel ---
+            validationPanel.style.display = 'block';
+            if (errors.length === 0) {
+                validationPanel.className = 'valid';
+                validationPanel.innerHTML = `<strong>✅ Maze is Valid</strong><br>All walls, posts, start/goal rules, and formatting conform to standards.`;
+            } else {
+                validationPanel.className = 'invalid';
+                let list = errors.map((e, idx) => {
+                    const activeClass = activeErrorIndex === idx ? 'active-error' : '';
+                    return `<li class="error-item ${activeClass}" onclick="selectError(${idx})">${e.msg}</li>`;
+                }).join('');
+                validationPanel.innerHTML = `<strong>❌ Found ${errors.length} Rule Violation(s):</strong><p style="font-size:12px;margin:4px 0 0 0;color:#856404;">Click an error to spotlight it</p><ul class="error-list">${list}</ul>`;
+            }
+        }
+
+        window.onload = renderMaze;
+    </script>
+</body>
+</html>
