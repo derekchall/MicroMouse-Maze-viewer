@@ -1,3 +1,5 @@
+code
+Markdown
 # 🐭 Micromouse Maze Viewer & Validator
 
 A lightweight, browser-based visualizer and strict rule validator for classic ASCII Micromouse mazes. 
@@ -32,3 +34,21 @@ You can instantly load a maze hosted anywhere on GitHub by appending `?maze=` fo
 *Example:*
 ```text
 https://derekchall.github.io/MicroMouse-Maze-viewer/?maze=https://github.com/micromouseonline/mazefiles/blob/master/classic/alljapan-011-1990-frsh.txt
+📝 Accepted Maze Format
+The ASCII maze should strictly conform to the specifications set out atgithub.com/micromouseonline/mazefiles.
+The viewer parses this standard classic Micromouse ASCII layout, where:
+o or + represents a post/peg
+--- represents a horizontal wall
+| represents a vertical wall
+S marks the Start cell (must be bottom-left)
+G marks the Goal cells (must be 4 cells in the exact 2x2 center)
+Example Snippet:
+code
+Text
+o---o---o---o
+|           |
+o   o---o   o
+| S | G   G |
+o---o---o---o
+💻 Running Locally
+Because this app is completely self-contained in a single file, you don't need any servers or dependencies to run it. Simply download the index.html file to your computer and double-click it to open it in Chrome, Edge, Firefox, or Safari!
