@@ -30,17 +30,25 @@
             border-radius: 8px;
             border: 1px solid var(--border);
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            box-sizing: border-box;
         }
+        
+        /* The entire left column is now strictly locked to 550px */
         .sidebar {
             flex: 0 0 auto; 
+            width: 550px; 
+            max-width: 100%; /* Keeps it responsive on mobile */
             display: flex;
             flex-direction: column;
             gap: 15px;
         }
+        
         h1 { margin: 0; font-size: 1.5rem; }
-        p { margin: 0; color: #586069; font-size: 0.9rem; line-height: 1.4; max-width: calc(66ch + 36px); }
+        p { margin: 0; color: #586069; font-size: 0.9rem; line-height: 1.4; }
         
         .drop-zone {
+            width: 100%;
+            box-sizing: border-box;
             border: 2px dashed #babbbd;
             border-radius: 6px;
             padding: 20px;
@@ -72,7 +80,11 @@
             font-size: 13px;
             line-height: 1.4;
             font-weight: 600;
+            
+            /* Forces ultra-long URLs to break cleanly */
+            overflow-wrap: anywhere;
             word-break: break-all;
+            white-space: normal;
         }
         #file-name-display a {
             color: #0366d6;
@@ -84,7 +96,7 @@
         }
 
         textarea {
-            width: calc(66ch + 36px); 
+            width: 100%; /* Now perfectly matches the sidebar */
             height: 300px;
             font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
             font-size: 12px;
@@ -98,7 +110,15 @@
             overflow-x: auto;
             background: #fafbfc;
         }
+        
+        .controls-row {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            width: 100%;
+        }
         button {
+            flex: 1;
             background-color: var(--btn);
             color: white;
             border: none;
@@ -111,17 +131,33 @@
         }
         button:hover { background-color: var(--btn-hover); }
         
+        .theme-toggle {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: #24292e;
+            user-select: none;
+        }
+        .theme-toggle input {
+            margin-right: 8px;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
         #validation-panel {
+            width: 100%;
+            box-sizing: border-box;
             padding: 15px;
             border-radius: 6px;
             font-size: 14px;
             display: none; 
-            max-width: calc(66ch + 6px);
         }
         .valid { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
         .invalid { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
         
-        /* Interactive Clickable Error Styles */
         .error-list { margin: 8px 0 0 0; padding: 0; font-size: 13px; }
         .error-item {
             cursor: pointer;
@@ -171,7 +207,14 @@
         </div>
 
         <textarea id="maze-input" spellcheck="false"></textarea>
-        <button onclick="renderMaze()">Render & Validate Maze</button>
+        
+        <div class="controls-row">
+            <button onclick="renderMaze()">Render & Validate</button>
+            <label class="theme-toggle">
+                <input type="checkbox" id="theme-switch" onchange="renderMaze()" checked>
+                Dark Maze
+            </label>
+        </div>
         
         <div id="validation-panel"></div>
     </div>
@@ -184,7 +227,6 @@
         const mazeInput = document.getElementById('maze-input');
         const fileNameDisplay = document.getElementById('file-name-display');
 
-        // Interactive Error State Variables
         let activeErrorIndex = -1;
         let lastRenderedText = "";
         let isSelectionClick = false;
@@ -201,7 +243,6 @@
             isSelectionClick = false;
         };
 
-        // Instantly clear the canvas (and hide file name) if user deletes the text
         mazeInput.addEventListener('input', function() {
             if (this.value.trim() === '') {
                 fileNameDisplay.style.display = 'none';
@@ -210,9 +251,6 @@
             }
         });
 
-        // ==========================================
-        // DRAG AND DROP ENGINE
-        // ==========================================
         const dropZone = document.getElementById('drop-zone');
         const fileInput = document.getElementById('file-upload');
 
@@ -249,7 +287,6 @@
                 return;
             }
 
-            // FILE NAME VALIDATION (Letters, numbers, hyphens, underscores)
             const baseName = file.name.slice(0, -4); 
             if (!/^[a-zA-Z0-9\-_]+$/.test(baseName)) {
                 currentFileNameError = `File name '${file.name}' contains invalid characters. Only letters, numbers, hyphens, and underscores are allowed.`;
@@ -274,16 +311,26 @@
             reader.readAsText(file);
         }
 
-        // ==========================================
-        // RENDERING & VALIDATION ENGINE
-        // ==========================================
         function renderMaze() {
             let text = mazeInput.value;
             const canvas = document.getElementById('maze-canvas');
             const ctx = canvas.getContext('2d');
             const validationPanel = document.getElementById('validation-panel');
+            
+            const isDarkMode = document.getElementById('theme-switch').checked;
 
-            // Reset active selection if the text was changed
+            const theme = {
+                bg: isDarkMode ? '#000000' : '#ffffff',
+                grid: isDarkMode ? '#2a2a2a' : '#e1e4e8',
+                wall: isDarkMode ? '#ff0000' : '#000000',
+                post: isDarkMode ? '#ffffff' : '#bbbbbb',
+                errStroke: isDarkMode ? 'rgba(255, 221, 0, 0.9)' : 'rgba(215, 58, 73, 0.9)',
+                errFillArea: isDarkMode ? 'rgba(255, 221, 0, 0.3)' : 'rgba(215, 58, 73, 0.3)',
+                errFillItem: isDarkMode ? 'rgba(255, 221, 0, 0.8)' : 'rgba(215, 58, 73, 0.8)',
+                errFadedFill: isDarkMode ? 'rgba(255, 221, 0, 0.05)' : 'rgba(215, 58, 73, 0.05)',
+                errFadedStroke: isDarkMode ? 'rgba(255, 221, 0, 0.1)' : 'rgba(215, 58, 73, 0.1)'
+            };
+
             if (!isSelectionClick) {
                 if (text !== lastRenderedText) {
                     activeErrorIndex = -1;
@@ -332,15 +379,14 @@
             canvas.width = cols * cellSize + padding * 2;
             canvas.height = rows * cellSize + padding * 2;
 
-            // --- Draw Base Maze ---
             ctx.fillStyle = '#ffffff';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             const halfCell = cellSize / 2;
-            ctx.fillStyle = '#000000';
+            ctx.fillStyle = theme.bg;
             ctx.fillRect(padding - halfCell, padding - halfCell, (cols * cellSize) + cellSize, (rows * cellSize) + cellSize);
 
-            ctx.strokeStyle = '#2a2a2a'; 
+            ctx.strokeStyle = theme.grid; 
             ctx.lineWidth = 1;
             for (let r = 0; r <= rows; r++) {
                 ctx.beginPath(); ctx.moveTo(padding, padding + r * cellSize); ctx.lineTo(padding + cols * cellSize, padding + r * cellSize); ctx.stroke();
@@ -365,7 +411,7 @@
                 }
             }
 
-            ctx.strokeStyle = '#ff0000';
+            ctx.strokeStyle = theme.wall;
             ctx.lineWidth = 5; 
             ctx.lineCap = 'square';
             ctx.beginPath();
@@ -387,14 +433,13 @@
             }
             ctx.stroke();
 
-            ctx.fillStyle = '#ffffff';
+            ctx.fillStyle = theme.post;
             for (let r = 0; r <= rows; r++) {
                 for (let c = 0; c <= cols; c++) {
                     ctx.fillRect((padding + c * cellSize) - 2.5, (padding + r * cellSize) - 2.5, 5, 5);
                 }
             }
 
-            // --- Error Processing ---
             let errors =[];
             let goalCount = 0;
             let startCount = 0;
@@ -425,7 +470,6 @@
                 });
             }
 
-            // 1. Character Validation 
             for (let r = 0; r <= rows * 2; r++) {
                 const line = lines[r] || '';
                 const expectedLen = cols * 4 + 1;
@@ -437,7 +481,7 @@
                             msg: `Extra illegal characters found at end of line ${r + 1}: '${trailing.trim()}'`,
                             draw: (ctx, colors) => {
                                 const cy = padding + (r / 2) * cellSize;
-                                ctx.fillStyle = colors.fill;
+                                ctx.fillStyle = colors.fillItem;
                                 ctx.fillRect(padding + cols * cellSize + 10, cy - 8, 20, 16);
                             }
                         });
@@ -452,7 +496,7 @@
                             errors.push({
                                 msg: `Illegal character at post position (Row ${r/2}, Col ${c}). Expected 'o', found '${disp}'.`,
                                 draw: (ctx, colors) => {
-                                    ctx.fillStyle = colors.fill;
+                                    ctx.fillStyle = colors.fillItem;
                                     ctx.fillRect((padding + c * cellSize) - 8, (padding + (r/2) * cellSize) - 8, 16, 16);
                                 }
                             });
@@ -464,7 +508,7 @@
                             errors.push({
                                 msg: `Illegal horizontal wall format between Col ${c} and ${c+1}. Found '${hw}'.`,
                                 draw: (ctx, colors) => {
-                                    ctx.fillStyle = colors.fill;
+                                    ctx.fillStyle = colors.fillItem;
                                     ctx.fillRect(padding + c * cellSize + 8, padding + (r/2) * cellSize - 6, cellSize - 16, 12);
                                 }
                             });
@@ -479,7 +523,7 @@
                             errors.push({
                                 msg: `Illegal vertical wall character at Row ${rowIdx}, Col ${c}. Found '${disp}'.`,
                                 draw: (ctx, colors) => {
-                                    ctx.fillStyle = colors.fill;
+                                    ctx.fillStyle = colors.fillItem;
                                     ctx.fillRect(padding + c * cellSize - 6, padding + rowIdx * cellSize + 8, 12, cellSize - 16);
                                 }
                             });
@@ -491,7 +535,7 @@
                             errors.push({
                                 msg: `Illegal cell content at Row ${rowIdx}, Col ${c}. Found '${cellStr}'.`,
                                 draw: (ctx, colors) => {
-                                    ctx.fillStyle = colors.fill;
+                                    ctx.fillStyle = colors.fillArea;
                                     ctx.fillRect(padding + c * cellSize + 4, padding + rowIdx * cellSize + 4, cellSize - 8, cellSize - 8);
                                 }
                             });
@@ -500,7 +544,6 @@
                 }
             }
 
-            // 2. Perimeter Validation
             for (let c = 0; c < cols; c++) {
                 if (lines[0].substring(c*4 + 1, c*4 + 4) !== '---') pushMissingWall(`Missing Top perimeter wall (Col ${c})`, c, 0, 'top');
                 if (lines[rows*2].substring(c*4 + 1, c*4 + 4) !== '---') pushMissingWall(`Missing Bottom perimeter wall (Col ${c})`, c, rows-1, 'bottom');
@@ -510,7 +553,6 @@
                 if (lines[r*2 + 1].charAt(cols*4) !== '|') pushMissingWall(`Missing Right perimeter wall (Row ${r})`, cols-1, r, 'right');
             }
 
-            // 3. Goal & Start Counting
             for (let r = 0; r < rows; r++) {
                 for (let c = 0; c < cols; c++) {
                     const cellChar = lines[r*2 + 1].charAt(c*4 + 2);
@@ -528,7 +570,7 @@
                 errors.push({
                     msg: `Missing 'S' in the start cell (bottom-left corner).`,
                     draw: (ctx, colors) => {
-                        ctx.fillStyle = colors.fill;
+                        ctx.fillStyle = colors.fillArea;
                         ctx.fillRect(padding, padding + (rows-1) * cellSize, cellSize, cellSize);
                     }
                 });
@@ -557,14 +599,13 @@
                     msg: "The 4 goal ('G') cells must be located exactly in the 2x2 center of the maze.",
                     draw: (ctx, colors) => {
                         if (r1 >= 0 && c1 >= 0) {
-                            ctx.fillStyle = colors.fill;
+                            ctx.fillStyle = colors.fillArea;
                             ctx.fillRect(padding + c1 * cellSize, padding + r1 * cellSize, cellSize*2, cellSize*2);
                         }
                     }
                 });
             }
 
-            // 4. Illegal Posts
             for (let r = 0; r <= rows; r++) {
                 for (let c = 0; c <= cols; c++) {
                     let hasWall = false;
@@ -585,7 +626,7 @@
                         errors.push({
                             msg: `Illegal wall connected to the Goal Post at Row ${r}, Col ${c}`,
                             draw: (ctx, colors) => {
-                                ctx.fillStyle = colors.fill; 
+                                ctx.fillStyle = colors.fillItem; 
                                 ctx.beginPath(); ctx.arc(padding + c * cellSize, padding + r * cellSize, 12, 0, 2*Math.PI); ctx.fill();
                             }
                         });
@@ -593,7 +634,7 @@
                         errors.push({
                             msg: `Illegal freestanding post at Row ${r}, Col ${c}`,
                             draw: (ctx, colors) => {
-                                ctx.fillStyle = colors.fill; 
+                                ctx.fillStyle = colors.fillItem; 
                                 ctx.beginPath(); ctx.arc(padding + c * cellSize, padding + r * cellSize, 10, 0, 2*Math.PI); ctx.fill();
                             }
                         });
@@ -601,14 +642,13 @@
                 }
             }
 
-            // --- Draw Error Overlays ---
             function getHighlightColors(idx) {
                 if (activeErrorIndex === -1) {
-                    return { fill: 'rgba(255, 221, 0, 0.7)', stroke: 'rgba(255, 221, 0, 0.9)' };
+                    return { stroke: theme.errStroke, fillArea: theme.errFillArea, fillItem: theme.errFillItem };
                 } else if (activeErrorIndex === idx) {
-                    return { fill: 'rgba(0, 255, 255, 0.8)', stroke: 'rgba(0, 255, 255, 1.0)' }; 
+                    return { stroke: 'rgba(0, 255, 255, 1.0)', fillArea: 'rgba(0, 255, 255, 0.4)', fillItem: 'rgba(0, 255, 255, 0.8)' }; 
                 } else {
-                    return { fill: 'rgba(255, 221, 0, 0.05)', stroke: 'rgba(255, 221, 0, 0.1)' }; 
+                    return { stroke: theme.errFadedStroke, fillArea: theme.errFadedFill, fillItem: theme.errFadedFill }; 
                 }
             }
 
@@ -621,7 +661,6 @@
                 errors[activeErrorIndex].draw(ctx, getHighlightColors(activeErrorIndex));
             }
 
-            // --- Update UI Panel ---
             validationPanel.style.display = 'block';
             if (errors.length === 0) {
                 validationPanel.className = 'valid';
@@ -636,20 +675,15 @@
             }
         }
 
-        // ==========================================
-        // EXTERNAL GITHUB URL LOADING (Auto-Fixer + Original Link)
-        // ==========================================
         const urlParams = new URLSearchParams(window.location.search);
         let mazeUrl = urlParams.get('maze');
         let displayUrl = mazeUrl; 
 
         if (mazeUrl) {
-            // AUTO-FIX: Convert standard GitHub URLs to Raw URLs so they don't crash the fetch
             if (mazeUrl.includes('github.com') && mazeUrl.includes('/blob/')) {
                 mazeUrl = mazeUrl.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
             }
             
-            // AUTO-FORMAT: If the user provides a raw link, reformat the display link to point to the normal GitHub page
             if (displayUrl.includes('raw.githubusercontent.com')) {
                 let parts = displayUrl.split('/');
                 if (parts.length >= 6) {
@@ -667,7 +701,6 @@
                 .then(text => {
                     mazeInput.value = text;
                     
-                    // Show the FULL clickable link pointing to the normal GitHub repository page
                     fileNameDisplay.innerHTML = `Loaded from URL:<br><a href="${displayUrl}" target="_blank" rel="noopener noreferrer">${displayUrl}</a>`;
                     fileNameDisplay.style.display = 'block';
                     
