@@ -9,12 +9,12 @@ A lightweight, browser-based visualizer and strict rule validator for classic AS
 
 ## ✨ Features
 
-*   **Instant Rendering:** Converts classic ASCII text grids into high-quality visual blueprints instantly.
+*   **Instant Rendering:** Converts classic ASCII text grids into high-quality visual mazes instantly.
 *   **Strict Rule Validation:** Automatically scans the maze for competition legality. It checks for intact perimeter walls, exact start (`S`) and goal (`G`) placements, illegal freestanding posts, and correct text formatting.
 *   **Interactive Error Spotlighting:** If an error is found, click on it in the generated list to instantly cast a neon cyan "spotlight" on the exact broken wall, post, or cell on the canvas!
 *   **Drag & Drop Support:** Simply drag a `.txt` file from your computer directly into the browser to load it.
-*   **Auto-Fixing GitHub Importer:** Load mazes directly from other GitHub repositories using URL parameters. (It will automatically fix standard GitHub web links into raw text links behind the scenes!)
-*   **Print-Friendly Light Mode:** Toggle between "Dark Maze" (high-contrast black background) and "Light Maze" (pure black-and-white mode, perfect for printing blueprints to paper).
+*   **Web Link Importer:** Load mazes directly from other GitHub repositories or URLs using web parameters.
+*   **Print-Friendly Light Mode:** Toggle between "Dark Maze" (high-contrast black background) and "Light Maze" (pure black-and-white mode, perfect for printing mazes to paper).
 
 ## 🛠️ How to Use
 
