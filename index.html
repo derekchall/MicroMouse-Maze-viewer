@@ -249,7 +249,7 @@
                 return;
             }
 
-            // FILE NAME VALIDATION 
+            // FILE NAME VALIDATION (Letters, numbers, hyphens, underscores)
             const baseName = file.name.slice(0, -4); 
             if (!/^[a-zA-Z0-9\-_]+$/.test(baseName)) {
                 currentFileNameError = `File name '${file.name}' contains invalid characters. Only letters, numbers, hyphens, and underscores are allowed.`;
@@ -266,7 +266,6 @@
                 }
                 mazeInput.value = content;
                 
-                // Show the file name visually in the drop zone
                 fileNameDisplay.innerHTML = `Loaded: <span>${file.name}</span>`;
                 fileNameDisplay.style.display = 'block';
 
@@ -426,6 +425,7 @@
                 });
             }
 
+            // 1. Character Validation 
             for (let r = 0; r <= rows * 2; r++) {
                 const line = lines[r] || '';
                 const expectedLen = cols * 4 + 1;
@@ -500,6 +500,7 @@
                 }
             }
 
+            // 2. Perimeter Validation
             for (let c = 0; c < cols; c++) {
                 if (lines[0].substring(c*4 + 1, c*4 + 4) !== '---') pushMissingWall(`Missing Top perimeter wall (Col ${c})`, c, 0, 'top');
                 if (lines[rows*2].substring(c*4 + 1, c*4 + 4) !== '---') pushMissingWall(`Missing Bottom perimeter wall (Col ${c})`, c, rows-1, 'bottom');
@@ -509,6 +510,7 @@
                 if (lines[r*2 + 1].charAt(cols*4) !== '|') pushMissingWall(`Missing Right perimeter wall (Row ${r})`, cols-1, r, 'right');
             }
 
+            // 3. Goal & Start Counting
             for (let r = 0; r < rows; r++) {
                 for (let c = 0; c < cols; c++) {
                     const cellChar = lines[r*2 + 1].charAt(c*4 + 2);
@@ -562,6 +564,7 @@
                 });
             }
 
+            // 4. Illegal Posts
             for (let r = 0; r <= rows; r++) {
                 for (let c = 0; c <= cols; c++) {
                     let hasWall = false;
@@ -598,6 +601,7 @@
                 }
             }
 
+            // --- Draw Error Overlays ---
             function getHighlightColors(idx) {
                 if (activeErrorIndex === -1) {
                     return { fill: 'rgba(255, 221, 0, 0.7)', stroke: 'rgba(255, 221, 0, 0.9)' };
@@ -617,6 +621,7 @@
                 errors[activeErrorIndex].draw(ctx, getHighlightColors(activeErrorIndex));
             }
 
+            // --- Update UI Panel ---
             validationPanel.style.display = 'block';
             if (errors.length === 0) {
                 validationPanel.className = 'valid';
@@ -632,16 +637,26 @@
         }
 
         // ==========================================
-        // EXTERNAL GITHUB URL LOADING (Auto-Fixer + Full Link)
+        // EXTERNAL GITHUB URL LOADING (Auto-Fixer + Original Link)
         // ==========================================
         const urlParams = new URLSearchParams(window.location.search);
         let mazeUrl = urlParams.get('maze');
-        let displayUrl = mazeUrl; // Save original URL for displaying
+        let displayUrl = mazeUrl; 
 
         if (mazeUrl) {
-            // AUTO-FIX: Convert standard GitHub URLs to Raw URLs so they don't crash
+            // AUTO-FIX: Convert standard GitHub URLs to Raw URLs so they don't crash the fetch
             if (mazeUrl.includes('github.com') && mazeUrl.includes('/blob/')) {
                 mazeUrl = mazeUrl.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
+            }
+            
+            // AUTO-FORMAT: If the user provides a raw link, reformat the display link to point to the normal GitHub page
+            if (displayUrl.includes('raw.githubusercontent.com')) {
+                let parts = displayUrl.split('/');
+                if (parts.length >= 6) {
+                    parts[2] = 'github.com';
+                    parts.splice(5, 0, 'blob');
+                    displayUrl = parts.join('/');
+                }
             }
 
             fetch(mazeUrl)
@@ -652,7 +667,7 @@
                 .then(text => {
                     mazeInput.value = text;
                     
-                    // Show the FULL clickable link the user originally provided
+                    // Show the FULL clickable link pointing to the normal GitHub repository page
                     fileNameDisplay.innerHTML = `Loaded from URL:<br><a href="${displayUrl}" target="_blank" rel="noopener noreferrer">${displayUrl}</a>`;
                     fileNameDisplay.style.display = 'block';
                     
@@ -660,7 +675,6 @@
                 })
                 .catch(err => {
                     alert("Error loading maze from URL: " + err.message + "\nMake sure it is a valid direct text file link.");
-                    renderMaze();
                 });
         }
     </script>
