@@ -1,10 +1,8 @@
-code
-Markdown
 # 🐭 Micromouse Maze Viewer & Validator
 
 A lightweight, browser-based visualizer and strict rule validator for classic ASCII Micromouse mazes. 
 
-**🚀 [Launch the Live Web App Here](https://derekchall.github.io/MicroMouse-Maze-viewer/)**
+**🚀[Launch the Live Web App Here](https://derekchall.github.io/MicroMouse-Maze-viewer/)**
 
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-323330?style=for-the-badge&logo=javascript&logoColor=F7DF1E)
@@ -34,21 +32,27 @@ You can instantly load a maze hosted anywhere on GitHub by appending `?maze=` fo
 *Example:*
 ```text
 https://derekchall.github.io/MicroMouse-Maze-viewer/?maze=https://github.com/micromouseonline/mazefiles/blob/master/classic/alljapan-011-1990-frsh.txt
-📝 Accepted Maze Format
-The ASCII maze should strictly conform to the specifications set out atgithub.com/micromouseonline/mazefiles.
+```
+
+## 📝 Accepted Maze Format
+
+The ASCII maze should strictly conform to the specifications set out at [github.com/micromouseonline/mazefiles](https://github.com/micromouseonline/mazefiles).
+
 The viewer parses this standard classic Micromouse ASCII layout, where:
-o or + represents a post/peg
---- represents a horizontal wall
-| represents a vertical wall
-S marks the Start cell (must be bottom-left)
-G marks the Goal cells (must be 4 cells in the exact 2x2 center)
-Example Snippet:
-code
-Text
+*   `o` or `+` represents a post/peg
+*   `---` represents a horizontal wall
+*   `|` represents a vertical wall
+*   `S` marks the Start cell (must be bottom-left)
+*   `G` marks the Goal cells (must be 4 cells in the exact 2x2 center)
+
+**Example Snippet:**
+```text
 o---o---o---o
 |           |
 o   o---o   o
 | S | G   G |
 o---o---o---o
-💻 Running Locally
-Because this app is completely self-contained in a single file, you don't need any servers or dependencies to run it. Simply download the index.html file to your computer and double-click it to open it in Chrome, Edge, Firefox, or Safari!
+```
+
+## 💻 Running Locally
+Because this app is completely self-contained in a single file, you don't need any servers or dependencies to run it. Simply download the `index.html` file to your computer and double-click it to open it in Chrome, Edge, Firefox, or Safari!
