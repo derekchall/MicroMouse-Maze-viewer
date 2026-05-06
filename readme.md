@@ -18,7 +18,7 @@ A lightweight, browser-based visualizer and strict rule validator for classic AS
 
 ## 🛠️ How to Use
 
-There are three ways to load a maze into the viewer:
+There are four ways to use the viewer:
 
 ### 1. Paste or Type
 Go to the [Live Viewer](https://derekchall.github.io/MicroMouse-Maze-viewer/) and simply paste your ASCII maze text directly into the text box. The canvas will render and validate it automatically.
@@ -34,9 +34,12 @@ You can instantly load a maze hosted anywhere on GitHub by appending `?maze=` fo
 https://derekchall.github.io/MicroMouse-Maze-viewer/?maze=https://github.com/micromouseonline/mazefiles/blob/master/classic/alljapan-011-1990-frsh.txt
 ```
 
+### 4. Running Locally
+Because this app is completely self-contained in a single file, you don't need any servers or dependencies to run it. Simply download the `index.html` file to your computer and double-click it to open it directly in Chrome, Edge, Firefox, or Safari!
+
 ## 📝 Accepted Maze Format
 
-The ASCII maze should strictly conform to the specifications set out at [github.com/micromouseonline/mazefiles](https://github.com/micromouseonline/mazefiles).
+The ASCII maze should strictly conform to the specifications set out at[github.com/micromouseonline/mazefiles](https://github.com/micromouseonline/mazefiles).
 
 The viewer parses this standard classic Micromouse ASCII layout, where:
 *   `o` or `+` represents a post/peg
@@ -81,6 +84,3 @@ o   o---o   o---o---o---o---o---o---o---o---o---o---o---o---o   o
 | S |                                                           |
 o---o---o---o---o---o---o---o---o---o---o---o---o---o---o---o---o
 ```
-
-## 💻 Running Locally
-Because this app is completely self-contained in a single file, you don't need any servers or dependencies to run it. Simply download the `index.html` file to your computer and double-click it to open it in Chrome, Edge, Firefox, or Safari!
