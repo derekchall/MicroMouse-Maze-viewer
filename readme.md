@@ -45,13 +45,41 @@ The viewer parses this standard classic Micromouse ASCII layout, where:
 *   `S` marks the Start cell (must be bottom-left)
 *   `G` marks the Goal cells (must be 4 cells in the exact 2x2 center)
 
-**Example Snippet:**
+**Example Maze:**
 ```text
-o---o---o---o
-|           |
-o   o---o   o
-| S | G   G |
-o---o---o---o
+o---o---o---o---o---o---o---o---o---o---o---o---o---o---o---o---o
+|       |   |                                   |               |
+o   o---o   o---o   o---o   o---o---o   o---o   o   o---o---o   o
+|   |           |   |           |           |   |   |       |   |
+o   o---o   o   o   o   o---o   o   o---o   o   o   o   o   o   o
+|       |   |   |           |       |           |   |   |   |   |
+o   o   o   o   o   o---o---o---o---o---o---o   o   o   o   o   o
+|   |       |   |       |                       |   |   |       |
+o   o---o   o   o---o   o   o---o---o---o---o---o   o   o---o---o
+|   |       |       |   |   |       |               |           |
+o   o   o---o---o   o   o   o   o   o   o---o---o---o---o---o   o
+|   |       |       |   |       |   |                       |   |
+o   o---o   o   o---o   o---o---o   o---o---o---o---o---o   o   o
+|   |       |   |       |               |                   |   |
+o   o   o---o   o   o   o   o---o---o   o   o---o---o---o---o   o
+|   |       |   |       |   | G   G |   |                   |   |
+o   o---o   o   o---o   o   o   o   o   o---o---o---o---o   o   o
+|       |   |       |   |   | G   G |   |       |           |   |
+o   o---o   o---o   o   o   o   o---o   o   o   o   o---o---o   o
+|   |       |       |   |       |       |   |   |   |           |
+o   o   o---o   o---o   o---o   o   o   o   o   o   o   o---o---o
+|   |       |       |       |       |       |       |           |
+o   o---o   o---o   o---o   o---o---o---o---o---o---o---o---o   o
+|   |           |       |                   |                   |
+o   o   o---o   o   o   o---o   o---o---o   o   o---o---o---o---o
+|       |   |   |   |       |   |           |                   |
+o---o   o   o   o---o---o   o---o   o---o---o---o---o---o---o   o
+|       |   |           |       |               |               |
+o   o---o   o---o---o   o---o   o---o---o---o   o   o---o---o---o
+|                           |                   |               |
+o   o---o   o---o---o---o---o---o---o---o---o---o---o---o---o   o
+| S |                                                           |
+o---o---o---o---o---o---o---o---o---o---o---o---o---o---o---o---o
 ```
 
 ## 💻 Running Locally
