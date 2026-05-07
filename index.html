@@ -219,6 +219,21 @@
             height: auto;
             border-radius: 4px;
         }
+
+        /* Embed Mode Styles */
+        body.embed-mode .sidebar {
+            display: none !important;
+        }
+        body.embed-mode {
+            padding: 0;
+            background-color: transparent;
+        }
+        body.embed-mode .panel.canvas-container {
+            box-shadow: none;
+            border: none;
+            padding: 0;
+            background: transparent;
+        }
     </style>
 </head>
 <body>
@@ -268,7 +283,6 @@
         const mazeInput = document.getElementById('maze-input');
         const fileNameDisplay = document.getElementById('file-name-display');
 
-        // Interactive Error State Variables
         let activeErrorIndex = -1;
         let lastRenderedText = "";
         let isSelectionClick = false;
@@ -285,7 +299,6 @@
             isSelectionClick = false;
         };
 
-        // Instantly clear the canvas (and hide file name) if user deletes the text
         mazeInput.addEventListener('input', function() {
             if (this.value.trim() === '') {
                 fileNameDisplay.style.display = 'none';
@@ -294,9 +307,6 @@
             }
         });
 
-        // ==========================================
-        // DRAG AND DROP ENGINE
-        // ==========================================
         const dropZone = document.getElementById('drop-zone');
         const fileInput = document.getElementById('file-upload');
 
@@ -333,7 +343,6 @@
                 return;
             }
 
-            // FILE NAME VALIDATION
             const baseName = file.name.slice(0, -4); 
             if (!/^[a-zA-Z0-9\-_]+$/.test(baseName)) {
                 currentFileNameError = `File name '${file.name}' contains invalid characters. Only letters, numbers, hyphens, and underscores are allowed.`;
@@ -350,7 +359,6 @@
                 }
                 mazeInput.value = content;
                 
-                // Show the file name visually in the drop zone
                 fileNameDisplay.innerHTML = `Loaded: <span>${file.name}</span>`;
                 fileNameDisplay.style.display = 'block';
 
@@ -359,20 +367,15 @@
             reader.readAsText(file);
         }
 
-        // ==========================================
-        // RENDERING & VALIDATION ENGINE
-        // ==========================================
         function renderMaze() {
             let text = mazeInput.value;
             const canvas = document.getElementById('maze-canvas');
             const ctx = canvas.getContext('2d');
             const validationPanel = document.getElementById('validation-panel');
             
-            // Check Controls State
             const isDarkMode = document.getElementById('theme-switch').checked;
             const showRoute = document.getElementById('route-switch').checked;
 
-            // Setup Theme Palette
             const theme = {
                 bg: isDarkMode ? '#000000' : '#ffffff',
                 grid: isDarkMode ? '#2a2a2a' : '#e1e4e8',
@@ -386,7 +389,6 @@
                 errFadedStroke: isDarkMode ? 'rgba(255, 221, 0, 0.1)' : 'rgba(215, 58, 73, 0.1)'
             };
 
-            // Reset active selection if the text was changed
             if (!isSelectionClick) {
                 if (text !== lastRenderedText) {
                     activeErrorIndex = -1;
@@ -435,7 +437,6 @@
             canvas.width = cols * cellSize + padding * 2;
             canvas.height = rows * cellSize + padding * 2;
 
-            // --- Draw Base Maze ---
             ctx.fillStyle = '#ffffff';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -452,7 +453,6 @@
                 ctx.beginPath(); ctx.moveTo(padding + c * cellSize, padding); ctx.lineTo(padding + c * cellSize, padding + rows * cellSize); ctx.stroke();
             }
 
-            // EXTRACT DATA FOR PATHFINDING
             let startNode = null;
             let goalNodes =[];
             for (let r = 0; r < rows; r++) {
@@ -473,7 +473,6 @@
                 }
             }
 
-            // --- BFS PATHFINDING ---
             let solutionPath = null;
             if (startNode && goalNodes.length > 0) {
                 let queue = [startNode];
@@ -493,7 +492,6 @@
                         break;
                     }
 
-                    // Check Passable Corridors
                     if (r > 0 && lines[r*2].substring(c*4+1, c*4+4) !== '---') {
                         if (!visited.has(`${r-1},${c}`)) {
                             visited.add(`${r-1},${c}`);
@@ -535,7 +533,6 @@
                 }
             }
 
-            // --- Draw Solution Path (Under Walls) ---
             if (solutionPath && showRoute) {
                 ctx.strokeStyle = theme.pathLine;
                 ctx.lineWidth = 6;
@@ -552,7 +549,6 @@
                 ctx.stroke();
             }
 
-            // --- Draw Walls & Posts ---
             ctx.strokeStyle = theme.wall;
             ctx.lineWidth = 5; 
             ctx.lineCap = 'square';
@@ -582,7 +578,6 @@
                 }
             }
 
-            // --- Error Processing ---
             let errors =[];
             let goalCount = 0;
             let startCount = 0;
@@ -613,7 +608,6 @@
                 });
             }
 
-            // 1. Character Validation 
             for (let r = 0; r <= rows * 2; r++) {
                 const line = lines[r] || '';
                 const expectedLen = cols * 4 + 1;
@@ -688,7 +682,6 @@
                 }
             }
 
-            // 2. Perimeter Validation
             for (let c = 0; c < cols; c++) {
                 if (lines[0].substring(c*4 + 1, c*4 + 4) !== '---') pushMissingWall(`Missing Top perimeter wall (Col ${c})`, c, 0, 'top');
                 if (lines[rows*2].substring(c*4 + 1, c*4 + 4) !== '---') pushMissingWall(`Missing Bottom perimeter wall (Col ${c})`, c, rows-1, 'bottom');
@@ -698,7 +691,6 @@
                 if (lines[r*2 + 1].charAt(cols*4) !== '|') pushMissingWall(`Missing Right perimeter wall (Row ${r})`, cols-1, r, 'right');
             }
 
-            // 3. Goal & Start Counting
             for (let r = 0; r < rows; r++) {
                 for (let c = 0; c < cols; c++) {
                     const cellChar = lines[r*2 + 1].charAt(c*4 + 2);
@@ -729,7 +721,6 @@
                 errors.push({ msg: `Found ${goalCount} goal ('G') cells, but there must be exactly 4.`, draw: null });
             }
             
-            // Check Path Existence
             if (startCount === 1 && goalCount === 4 && !solutionPath) {
                 errors.push({
                     msg: "No valid path exists from the Start cell to the Goal.",
@@ -760,7 +751,6 @@
                 });
             }
 
-            // 4. Illegal Posts
             for (let r = 0; r <= rows; r++) {
                 for (let c = 0; c <= cols; c++) {
                     let hasWall = false;
@@ -797,7 +787,6 @@
                 }
             }
 
-            // --- Draw Error Overlays ---
             function getHighlightColors(idx) {
                 if (activeErrorIndex === -1) {
                     return { stroke: theme.errStroke, fillArea: theme.errFillArea, fillItem: theme.errFillItem };
@@ -817,7 +806,6 @@
                 errors[activeErrorIndex].draw(ctx, getHighlightColors(activeErrorIndex));
             }
 
-            // --- Update UI Panel ---
             validationPanel.style.display = 'block';
             if (errors.length === 0) {
                 validationPanel.className = 'valid';
@@ -832,14 +820,17 @@
             }
         }
 
-        // ==========================================
-        // EXTERNAL GITHUB URL LOADING
-        // ==========================================
         const urlParams = new URLSearchParams(window.location.search);
         let mazeUrl = urlParams.get('maze');
-        let displayUrl = mazeUrl; 
+        
+        const isEmbed = urlParams.get('embed') === 'true';
+        if (isEmbed) {
+            document.body.classList.add('embed-mode');
+        }
 
         if (mazeUrl) {
+            let displayUrl = mazeUrl;
+            
             if (mazeUrl.includes('github.com') && mazeUrl.includes('/blob/')) {
                 mazeUrl = mazeUrl.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
             }

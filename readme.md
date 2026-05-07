@@ -39,7 +39,7 @@ Because this app is completely self-contained in a single file, you don't need a
 
 ## 📝 Accepted Maze Format
 
-The ASCII maze should strictly conform to the specifications set out at[github.com/micromouseonline/mazefiles](https://github.com/micromouseonline/mazefiles).
+The ASCII maze should strictly conform to the specifications set out at [github.com/micromouseonline/mazefiles](https://github.com/micromouseonline/mazefiles).
 
 The viewer parses this standard classic Micromouse ASCII layout, where:
 *   `o` or `+` represents a post/peg
@@ -83,4 +83,35 @@ o   o---o   o---o---o   o---o   o---o---o---o   o   o---o---o---o
 o   o---o   o---o---o---o---o---o---o---o---o---o---o---o---o   o
 | S |                                                           |
 o---o---o---o---o---o---o---o---o---o---o---o---o---o---o---o---o
+```
+
+## 🖼️ Embedding the Viewer
+
+You can embed the live maze viewer directly into your own website, blog, or project page using an HTML `<iframe>`.
+
+### Standard Embed
+
+This will embed the entire web app, including the editor and validation panels.
+
+```html
+<iframe 
+    src="https://derekchall.github.io/MicroMouse-Maze-viewer/?maze=https://raw.githubusercontent.com/micromouseonline/mazefiles/master/classic/alljapan-011-1990-frsh.txt" 
+    width="100%" 
+    height="700" 
+    frameborder="0">
+</iframe>
+```
+
+### Clean Embed (Recommended)
+
+For a cleaner look that shows **only the maze canvas**, add `&embed=true` to the end of the URL. This activates "Embed Mode," which automatically hides all UI elements.
+
+```html
+<iframe 
+    src="https://derekchall.github.io/MicroMouse-Maze-viewer/?maze=https://raw.githubusercontent.com/micromouseonline/mazefiles/master/classic/alljapan-011-1990-frsh.txt&embed=true" 
+    width="800" 
+    height="800" 
+    frameborder="0"
+    style="border: 1px solid #ccc; border-radius: 8px;">
+</iframe>
 ```
