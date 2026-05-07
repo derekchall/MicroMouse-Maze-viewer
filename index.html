@@ -33,17 +33,39 @@
             box-sizing: border-box;
         }
         
-        /* The entire left column is now strictly locked to 550px */
         .sidebar {
             flex: 0 0 auto; 
             width: 550px; 
-            max-width: 100%; /* Keeps it responsive on mobile */
+            max-width: 100%; 
             display: flex;
             flex-direction: column;
             gap: 15px;
         }
         
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
         h1 { margin: 0; font-size: 1.5rem; }
+        
+        .header-links a {
+            color: #0366d6;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 13px;
+        }
+        .header-links a:hover {
+            text-decoration: underline;
+        }
+        .header-links span {
+            color: #babbbd;
+            margin: 0 6px;
+        }
+
         p { margin: 0; color: #586069; font-size: 0.9rem; line-height: 1.4; }
         
         .drop-zone {
@@ -80,8 +102,6 @@
             font-size: 13px;
             line-height: 1.4;
             font-weight: 600;
-            
-            /* Forces ultra-long URLs to break cleanly */
             overflow-wrap: anywhere;
             word-break: break-all;
             white-space: normal;
@@ -96,7 +116,7 @@
         }
 
         textarea {
-            width: 100%; /* Now perfectly matches the sidebar */
+            width: 100%; 
             height: 300px;
             font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
             font-size: 12px;
@@ -176,7 +196,7 @@
             background-color: #fff;
             color: #721c24;
             font-weight: bold;
-            border-left: 4px solid #00ffff; /* Cyan Marker */
+            border-left: 4px solid #00ffff; 
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
@@ -196,7 +216,14 @@
 <body>
 
     <div class="panel sidebar">
-        <h1>Micromouse Maze Viewer</h1>
+        <div class="header-container">
+            <h1>Micromouse Maze Viewer</h1>
+            <div class="header-links">
+                <a href="https://github.com/derekchall/MicroMouse-Maze-viewer" target="_blank" rel="noopener noreferrer">About</a>
+                <span>|</span>
+                <a href="https://www.youtube.com/@MicroMouse" target="_blank" rel="noopener noreferrer">MicroMouse</a>
+            </div>
+        </div>
         
         <div id="drop-zone" class="drop-zone">
             <strong>Drag & Drop</strong> a maze .txt file here<br>
