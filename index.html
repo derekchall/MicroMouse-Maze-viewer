@@ -148,8 +148,16 @@
             border-radius: 6px;
             cursor: pointer;
             transition: background-color 0.2s;
+            height: 100%;
         }
         button:hover { background-color: var(--btn-hover); }
+        
+        .toggles-column {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 110px;
+        }
         
         .theme-toggle {
             cursor: pointer;
@@ -237,10 +245,16 @@
         
         <div class="controls-row">
             <button onclick="renderMaze()">Render & Validate</button>
-            <label class="theme-toggle">
-                <input type="checkbox" id="theme-switch" onchange="renderMaze()" checked>
-                Dark Maze
-            </label>
+            <div class="toggles-column">
+                <label class="theme-toggle">
+                    <input type="checkbox" id="theme-switch" onchange="renderMaze()" checked>
+                    Dark Maze
+                </label>
+                <label class="theme-toggle">
+                    <input type="checkbox" id="route-switch" onchange="renderMaze()" checked>
+                    Show Route
+                </label>
+            </div>
         </div>
         
         <div id="validation-panel"></div>
@@ -254,6 +268,7 @@
         const mazeInput = document.getElementById('maze-input');
         const fileNameDisplay = document.getElementById('file-name-display');
 
+        // Interactive Error State Variables
         let activeErrorIndex = -1;
         let lastRenderedText = "";
         let isSelectionClick = false;
@@ -270,6 +285,7 @@
             isSelectionClick = false;
         };
 
+        // Instantly clear the canvas (and hide file name) if user deletes the text
         mazeInput.addEventListener('input', function() {
             if (this.value.trim() === '') {
                 fileNameDisplay.style.display = 'none';
@@ -278,6 +294,9 @@
             }
         });
 
+        // ==========================================
+        // DRAG AND DROP ENGINE
+        // ==========================================
         const dropZone = document.getElementById('drop-zone');
         const fileInput = document.getElementById('file-upload');
 
@@ -314,6 +333,7 @@
                 return;
             }
 
+            // FILE NAME VALIDATION
             const baseName = file.name.slice(0, -4); 
             if (!/^[a-zA-Z0-9\-_]+$/.test(baseName)) {
                 currentFileNameError = `File name '${file.name}' contains invalid characters. Only letters, numbers, hyphens, and underscores are allowed.`;
@@ -330,6 +350,7 @@
                 }
                 mazeInput.value = content;
                 
+                // Show the file name visually in the drop zone
                 fileNameDisplay.innerHTML = `Loaded: <span>${file.name}</span>`;
                 fileNameDisplay.style.display = 'block';
 
@@ -338,19 +359,26 @@
             reader.readAsText(file);
         }
 
+        // ==========================================
+        // RENDERING & VALIDATION ENGINE
+        // ==========================================
         function renderMaze() {
             let text = mazeInput.value;
             const canvas = document.getElementById('maze-canvas');
             const ctx = canvas.getContext('2d');
             const validationPanel = document.getElementById('validation-panel');
             
+            // Check Controls State
             const isDarkMode = document.getElementById('theme-switch').checked;
+            const showRoute = document.getElementById('route-switch').checked;
 
+            // Setup Theme Palette
             const theme = {
                 bg: isDarkMode ? '#000000' : '#ffffff',
                 grid: isDarkMode ? '#2a2a2a' : '#e1e4e8',
                 wall: isDarkMode ? '#ff0000' : '#000000',
                 post: isDarkMode ? '#ffffff' : '#bbbbbb',
+                pathLine: isDarkMode ? 'rgba(0, 255, 255, 0.4)' : 'rgba(0, 120, 215, 0.3)',
                 errStroke: isDarkMode ? 'rgba(255, 221, 0, 0.9)' : 'rgba(215, 58, 73, 0.9)',
                 errFillArea: isDarkMode ? 'rgba(255, 221, 0, 0.3)' : 'rgba(215, 58, 73, 0.3)',
                 errFillItem: isDarkMode ? 'rgba(255, 221, 0, 0.8)' : 'rgba(215, 58, 73, 0.8)',
@@ -358,6 +386,7 @@
                 errFadedStroke: isDarkMode ? 'rgba(255, 221, 0, 0.1)' : 'rgba(215, 58, 73, 0.1)'
             };
 
+            // Reset active selection if the text was changed
             if (!isSelectionClick) {
                 if (text !== lastRenderedText) {
                     activeErrorIndex = -1;
@@ -406,6 +435,7 @@
             canvas.width = cols * cellSize + padding * 2;
             canvas.height = rows * cellSize + padding * 2;
 
+            // --- Draw Base Maze ---
             ctx.fillStyle = '#ffffff';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -422,6 +452,9 @@
                 ctx.beginPath(); ctx.moveTo(padding + c * cellSize, padding); ctx.lineTo(padding + c * cellSize, padding + rows * cellSize); ctx.stroke();
             }
 
+            // EXTRACT DATA FOR PATHFINDING
+            let startNode = null;
+            let goalNodes =[];
             for (let r = 0; r < rows; r++) {
                 const rowTextCell = lines[r * 2 + 1] || '';
                 for (let c = 0; c < cols; c++) {
@@ -429,15 +462,97 @@
                     const x = padding + c * cellSize;
                     const y = padding + r * cellSize;
                     if (centerChar === 'S') {
+                        startNode = {r, c};
                         ctx.fillStyle = '#d4edda'; ctx.fillRect(x, y, cellSize, cellSize);
                         ctx.fillStyle = '#155724'; ctx.font = "bold 20px Arial"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText("S", x + cellSize / 2, y + cellSize / 2);
                     } else if (centerChar === 'G') {
+                        goalNodes.push(`${r},${c}`);
                         ctx.fillStyle = '#e8d4ed'; ctx.fillRect(x, y, cellSize, cellSize);
                         ctx.fillStyle = '#4a1557'; ctx.font = "bold 20px Arial"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText("G", x + cellSize / 2, y + cellSize / 2);
                     }
                 }
             }
 
+            // --- BFS PATHFINDING ---
+            let solutionPath = null;
+            if (startNode && goalNodes.length > 0) {
+                let queue = [startNode];
+                let visited = new Set();
+                visited.add(`${startNode.r},${startNode.c}`);
+                let parents = {};
+
+                let foundGoal = null;
+
+                while(queue.length > 0) {
+                    let curr = queue.shift();
+                    let r = curr.r;
+                    let c = curr.c;
+
+                    if (goalNodes.includes(`${r},${c}`)) {
+                        foundGoal = curr;
+                        break;
+                    }
+
+                    // Check Passable Corridors
+                    if (r > 0 && lines[r*2].substring(c*4+1, c*4+4) !== '---') {
+                        if (!visited.has(`${r-1},${c}`)) {
+                            visited.add(`${r-1},${c}`);
+                            parents[`${r-1},${c}`] = curr;
+                            queue.push({r: r-1, c: c});
+                        }
+                    }
+                    if (r < rows-1 && lines[r*2+2].substring(c*4+1, c*4+4) !== '---') {
+                        if (!visited.has(`${r+1},${c}`)) {
+                            visited.add(`${r+1},${c}`);
+                            parents[`${r+1},${c}`] = curr;
+                            queue.push({r: r+1, c: c});
+                        }
+                    }
+                    if (c > 0 && lines[r*2+1].charAt(c*4) !== '|') {
+                        if (!visited.has(`${r},${c-1}`)) {
+                            visited.add(`${r},${c-1}`);
+                            parents[`${r},${c-1}`] = curr;
+                            queue.push({r: r, c: c-1});
+                        }
+                    }
+                    if (c < cols-1 && lines[r*2+1].charAt(c*4+4) !== '|') {
+                        if (!visited.has(`${r},${c+1}`)) {
+                            visited.add(`${r},${c+1}`);
+                            parents[`${r},${c+1}`] = curr;
+                            queue.push({r: r, c: c+1});
+                        }
+                    }
+                }
+
+                if (foundGoal) {
+                    solutionPath =[];
+                    let curr = foundGoal;
+                    while(curr) {
+                        solutionPath.push(curr);
+                        curr = parents[`${curr.r},${curr.c}`];
+                    }
+                    solutionPath.reverse(); 
+                }
+            }
+
+            // --- Draw Solution Path (Under Walls) ---
+            if (solutionPath && showRoute) {
+                ctx.strokeStyle = theme.pathLine;
+                ctx.lineWidth = 6;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.beginPath();
+                for (let i = 0; i < solutionPath.length; i++) {
+                    let pt = solutionPath[i];
+                    let x = padding + pt.c * cellSize + cellSize / 2;
+                    let y = padding + pt.r * cellSize + cellSize / 2;
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+            }
+
+            // --- Draw Walls & Posts ---
             ctx.strokeStyle = theme.wall;
             ctx.lineWidth = 5; 
             ctx.lineCap = 'square';
@@ -467,6 +582,7 @@
                 }
             }
 
+            // --- Error Processing ---
             let errors =[];
             let goalCount = 0;
             let startCount = 0;
@@ -497,6 +613,7 @@
                 });
             }
 
+            // 1. Character Validation 
             for (let r = 0; r <= rows * 2; r++) {
                 const line = lines[r] || '';
                 const expectedLen = cols * 4 + 1;
@@ -571,6 +688,7 @@
                 }
             }
 
+            // 2. Perimeter Validation
             for (let c = 0; c < cols; c++) {
                 if (lines[0].substring(c*4 + 1, c*4 + 4) !== '---') pushMissingWall(`Missing Top perimeter wall (Col ${c})`, c, 0, 'top');
                 if (lines[rows*2].substring(c*4 + 1, c*4 + 4) !== '---') pushMissingWall(`Missing Bottom perimeter wall (Col ${c})`, c, rows-1, 'bottom');
@@ -580,6 +698,7 @@
                 if (lines[r*2 + 1].charAt(cols*4) !== '|') pushMissingWall(`Missing Right perimeter wall (Row ${r})`, cols-1, r, 'right');
             }
 
+            // 3. Goal & Start Counting
             for (let r = 0; r < rows; r++) {
                 for (let c = 0; c < cols; c++) {
                     const cellChar = lines[r*2 + 1].charAt(c*4 + 2);
@@ -609,6 +728,14 @@
             if (goalCount !== 4) {
                 errors.push({ msg: `Found ${goalCount} goal ('G') cells, but there must be exactly 4.`, draw: null });
             }
+            
+            // Check Path Existence
+            if (startCount === 1 && goalCount === 4 && !solutionPath) {
+                errors.push({
+                    msg: "No valid path exists from the Start cell to the Goal.",
+                    draw: null
+                });
+            }
 
             const r1 = Math.floor(rows / 2) - 1;
             const r2 = Math.floor(rows / 2);
@@ -633,6 +760,7 @@
                 });
             }
 
+            // 4. Illegal Posts
             for (let r = 0; r <= rows; r++) {
                 for (let c = 0; c <= cols; c++) {
                     let hasWall = false;
@@ -669,6 +797,7 @@
                 }
             }
 
+            // --- Draw Error Overlays ---
             function getHighlightColors(idx) {
                 if (activeErrorIndex === -1) {
                     return { stroke: theme.errStroke, fillArea: theme.errFillArea, fillItem: theme.errFillItem };
@@ -688,6 +817,7 @@
                 errors[activeErrorIndex].draw(ctx, getHighlightColors(activeErrorIndex));
             }
 
+            // --- Update UI Panel ---
             validationPanel.style.display = 'block';
             if (errors.length === 0) {
                 validationPanel.className = 'valid';
@@ -702,6 +832,9 @@
             }
         }
 
+        // ==========================================
+        // EXTERNAL GITHUB URL LOADING
+        // ==========================================
         const urlParams = new URLSearchParams(window.location.search);
         let mazeUrl = urlParams.get('maze');
         let displayUrl = mazeUrl; 
