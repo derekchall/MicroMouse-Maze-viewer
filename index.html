@@ -7,233 +7,44 @@
     <!-- Custom Maze Favicon (SVG) -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='black'/><path d='M10 10h80v80H10zM50 10v40h40M10 50h40v40' stroke='red' stroke-width='10' fill='none'/><rect x='44' y='44' width='12' height='12' fill='white'/><rect x='4' y='4' width='12' height='12' fill='white'/><rect x='84' y='4' width='12' height='12' fill='white'/><rect x='4' y='84' width='12' height='12' fill='white'/><rect x='84' y='84' width='12' height='12' fill='white'/></svg>">
     <style>
-        :root {
-            --bg: #f6f8fa;
-            --border: #e1e4e8;
-            --btn: #2ea44f;
-            --btn-hover: #2c974b;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: var(--bg);
-            color: #24292e;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: center;
-        }
-        .panel {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            box-sizing: border-box;
-        }
-        
-        .sidebar {
-            flex: 0 0 auto; 
-            width: 550px; 
-            max-width: 100%; 
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        
-        .header-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        
+        :root { --bg: #f6f8fa; --border: #e1e4e8; --btn: #2ea44f; --btn-hover: #2c974b; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; margin: 0; padding: 20px; background-color: var(--bg); color: #24292e; display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
+        .panel { background: white; padding: 20px; border-radius: 8px; border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.05); box-sizing: border-box; }
+        .sidebar { flex: 0 0 auto; width: 550px; max-width: 100%; display: flex; flex-direction: column; gap: 15px; }
+        .header-container { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
         h1 { margin: 0; font-size: 1.5rem; }
-        
-        .header-links a {
-            color: #0366d6;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 13px;
-        }
-        .header-links a:hover {
-            text-decoration: underline;
-        }
-        .header-links span {
-            color: #babbbd;
-            margin: 0 6px;
-        }
-
-        p { margin: 0; color: #586069; font-size: 0.9rem; line-height: 1.4; }
-        
-        .drop-zone {
-            width: 100%;
-            box-sizing: border-box;
-            border: 2px dashed #babbbd;
-            border-radius: 6px;
-            padding: 20px;
-            text-align: center;
-            background: #fafbfc;
-            color: #586069;
-            font-size: 14px;
-            transition: all 0.2s ease;
-        }
-        .drop-zone.dragover {
-            background: #e1edf8;
-            border-color: #0366d6;
-            color: #0366d6;
-        }
-        .file-label {
-            color: #0366d6;
-            cursor: pointer;
-            text-decoration: underline;
-            font-weight: 600;
-        }
-        
-        #file-name-display {
-            display: none;
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 1px solid #e1e4e8;
-            color: #24292e;
-            font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
-            font-size: 13px;
-            line-height: 1.4;
-            font-weight: 600;
-            overflow-wrap: anywhere;
-            word-break: break-all;
-            white-space: normal;
-        }
-        #file-name-display a {
-            color: #0366d6;
-            text-decoration: none;
-            font-weight: 400;
-        }
-        #file-name-display a:hover {
-            text-decoration: underline;
-        }
-
-        textarea {
-            width: 100%; 
-            height: 300px;
-            font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
-            font-size: 12px;
-            line-height: 1.2;
-            padding: 10px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            resize: vertical;
-            box-sizing: border-box;
-            white-space: pre;
-            overflow-x: auto;
-            background: #fafbfc;
-        }
-        
-        .controls-row {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            width: 100%;
-        }
-        button {
-            flex: 1;
-            background-color: var(--btn);
-            color: white;
-            border: none;
-            padding: 12px 15px;
-            font-size: 14px;
-            font-weight: 600;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            height: 100%;
-        }
+        .header-links a { color: #0366d6; text-decoration: none; font-weight: 600; font-size: 13px; }
+        .header-links a:hover { text-decoration: underline; }
+        .header-links span { color: #babbbd; margin: 0 6px; }
+        .drop-zone { width: 100%; box-sizing: border-box; border: 2px dashed #babbbd; border-radius: 6px; padding: 20px; text-align: center; background: #fafbfc; color: #586069; font-size: 14px; transition: all 0.2s ease; }
+        .drop-zone.dragover { background: #e1edf8; border-color: #0366d6; color: #0366d6; }
+        .file-label { color: #0366d6; cursor: pointer; text-decoration: underline; font-weight: 600; }
+        #file-name-display { display: none; margin-top: 10px; padding-top: 10px; border-top: 1px solid #e1e4e8; color: #24292e; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 12px; line-height: 1.4; overflow-wrap: anywhere; word-break: break-all; }
+        textarea { width: 100%; height: 180px; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 11px; line-height: 1.1; padding: 10px; border: 1px solid var(--border); border-radius: 6px; resize: vertical; box-sizing: border-box; white-space: pre; overflow-x: auto; background: #fafbfc; }
+        .controls-row { display: flex; gap: 15px; align-items: center; width: 100%; }
+        button { flex: 1; background-color: var(--btn); color: white; border: none; padding: 12px 15px; font-size: 14px; font-weight: 600; border-radius: 6px; cursor: pointer; transition: background-color 0.2s; height: 100%; }
         button:hover { background-color: var(--btn-hover); }
-        
-        .toggles-column {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            min-width: 110px;
-        }
-        
-        .theme-toggle {
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            font-size: 14px;
-            font-weight: 600;
-            color: #24292e;
-            user-select: none;
-        }
-        .theme-toggle input {
-            margin-right: 8px;
-            width: 16px;
-            height: 16px;
-            cursor: pointer;
-        }
-
-        #validation-panel {
-            width: 100%;
-            box-sizing: border-box;
-            padding: 15px;
-            border-radius: 6px;
-            font-size: 14px;
-            display: none; 
-        }
+        .toggles-column { display: flex; flex-direction: column; gap: 4px; min-width: 140px; }
+        .theme-toggle { cursor: pointer; display: flex; align-items: center; font-size: 12px; font-weight: 600; color: #24292e; user-select: none; }
+        .theme-toggle input { margin-right: 8px; width: 14px; height: 14px; cursor: pointer; }
+        #validation-panel { width: 100%; box-sizing: border-box; padding: 15px; border-radius: 6px; font-size: 14px; display: none; }
         .valid { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
         .invalid { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-        
-        .error-list { margin: 8px 0 0 0; padding: 0; font-size: 13px; }
-        .error-item {
-            cursor: pointer;
-            padding: 5px 8px;
-            margin-bottom: 4px;
-            border-radius: 4px;
-            list-style-type: none;
-            border-left: 3px solid transparent;
-            transition: all 0.2s ease;
-            background-color: rgba(255, 255, 255, 0.4);
-        }
-        .error-item:hover {
-            background-color: rgba(255, 255, 255, 0.8);
-        }
-        .error-item.active-error {
-            background-color: #fff;
-            color: #721c24;
-            font-weight: bold;
-            border-left: 4px solid #00ffff; 
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .canvas-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #ffffff; 
-        }
-        canvas {
-            max-width: 100%;
-            height: auto;
-            border-radius: 4px;
-        }
-
-        /* Embed Mode Styles */
-        body.embed-mode .sidebar {
-            display: none !important;
-        }
-        body.embed-mode {
-            padding: 0;
-            background-color: transparent;
-        }
-        body.embed-mode .panel.canvas-container {
-            box-shadow: none;
-            border: none;
-            padding: 0;
-            background: transparent;
-        }
+        .searching { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+        #routes-container { display: none; width: 100%; background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 12px; box-sizing: border-box; }
+        #routes-container h3 { margin: 0 0 8px 0; font-size: 14px; color: #24292e; }
+        .legend { font-size: 11px; color: #586069; margin: 4px 0 8px 0; border-bottom: 1px solid #eee; padding-bottom: 6px; }
+        #routes-list { max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; padding-right: 5px; }
+        .route-item { cursor: pointer; padding: 10px; border-radius: 6px; background: #f6f8fa; border: 1px solid #e1e4e8; font-family: ui-monospace, monospace; font-size: 11px; transition: all 0.1s ease; }
+        .route-item:hover { border-color: #0366d6; background: #fff; }
+        .route-item.selected { border-color: #00ffff; background: #fff; box-shadow: 0 0 0 2px #00ffff; }
+        .route-stats { color: #586069; font-weight: bold; margin-bottom: 4px; display: block; border-bottom: 1px solid #eee; padding-bottom: 4px; font-size: 10px; text-transform: uppercase; }
+        .route-str { color: #24292e; word-break: break-all; display: block; line-height: 1.4; letter-spacing: 0.5px; }
+        .canvas-container { display: flex; align-items: center; justify-content: center; background-color: #ffffff; }
+        canvas { max-width: 100%; height: auto; border-radius: 4px; }
+        body.embed-mode .sidebar { display: none !important; }
+        body.embed-mode { padding: 0; background-color: transparent; }
+        body.embed-mode .panel.canvas-container { box-shadow: none; border: none; padding: 0; background: transparent; }
     </style>
 </head>
 <body>
@@ -242,9 +53,9 @@
         <div class="header-container">
             <h1>Micromouse Maze Viewer</h1>
             <div class="header-links">
-                <a href="https://github.com/derekchall/MicroMouse-Maze-viewer" target="_blank" rel="noopener noreferrer">About</a>
+                <a href="https://github.com/derekchall/MicroMouse-Maze-viewer" target="_blank">About</a>
                 <span>|</span>
-                <a href="https://www.youtube.com/@MicroMouse" target="_blank" rel="noopener noreferrer">MicroMouse</a>
+                <a href="https://www.youtube.com/@MicroMouse" target="_blank">MicroMouse</a>
             </div>
         </div>
         
@@ -252,27 +63,28 @@
             <strong>Drag & Drop</strong> a maze .txt file here<br>
             or <label for="file-upload" class="file-label">Browse Local Files</label>
             <input type="file" id="file-upload" accept=".txt" style="display: none;">
-            
             <div id="file-name-display"></div>
         </div>
 
-        <textarea id="maze-input" spellcheck="false"></textarea>
+        <textarea id="maze-input" spellcheck="false" placeholder="Paste ASCII maze here..."></textarea>
         
         <div class="controls-row">
-            <button onclick="renderMaze()">Render & Validate</button>
+            <button id="btn-render" onclick="renderMaze()">Render & Validate</button>
+            <button id="btn-cancel" onclick="window.cancelSearch=true" style="display:none; background-color: #d73a49;">Stop Search</button>
             <div class="toggles-column">
-                <label class="theme-toggle">
-                    <input type="checkbox" id="theme-switch" onchange="renderMaze()" checked>
-                    Dark Maze
-                </label>
-                <label class="theme-toggle">
-                    <input type="checkbox" id="route-switch" onchange="renderMaze()" checked>
-                    Show Route
-                </label>
+                <label class="theme-toggle"><input type="checkbox" id="theme-switch" onchange="renderMaze()" checked> Dark Maze</label>
+                <label class="theme-toggle"><input type="checkbox" id="route-switch" onchange="renderMaze()" checked> Show Routes</label>
+                <label class="theme-toggle"><input type="checkbox" id="deadend-switch" onchange="renderMaze()"> Highlight Dead-ends</label>
+                <label class="theme-toggle"><input type="checkbox" id="diagonal-switch" onchange="renderMaze()" checked> Diagonal Routes</label>
             </div>
         </div>
-        
         <div id="validation-panel"></div>
+
+        <div id="routes-container">
+            <h3>Available Routes to Center</h3>
+            <div class="legend"><b>F#</b>: Orthogonal (180mm) | <b>D#</b>: Diagonal (127.3mm) | <b>SS/SD/DS/DD</b>: Turn commands</div>
+            <div id="routes-list"></div>
+        </div>
     </div>
 
     <div class="panel canvas-container">
@@ -282,584 +94,519 @@
     <script>
         const mazeInput = document.getElementById('maze-input');
         const fileNameDisplay = document.getElementById('file-name-display');
+        
+        // Globals for state persistence
+        let selectedRouteIndex = 0;
+        let lastRenderedText = ""; 
+        
+        window.isSearching = false;
+        window.cancelSearch = false;
+        window.cachedPaths = null;
+        window.selectedPathKey = null;
+        window.currentPaths = [];
+        window.userDeselected = false;
 
-        let activeErrorIndex = -1;
-        let lastRenderedText = "";
-        let isSelectionClick = false;
-        let currentFileNameError = null; 
-
-        window.selectError = function(idx) {
-            if (activeErrorIndex === idx) {
-                activeErrorIndex = -1;
+        window.selectRoute = (idx) => {
+            if (selectedRouteIndex === idx) {
+                // Deselect
+                selectedRouteIndex = -1;
+                window.selectedPathKey = null;
+                window.userDeselected = true;
             } else {
-                activeErrorIndex = idx;
+                // Select
+                selectedRouteIndex = idx;
+                if (window.currentPaths && window.currentPaths[idx]) {
+                    window.selectedPathKey = window.currentPaths[idx].key;
+                }
+                window.userDeselected = false;
             }
-            isSelectionClick = true;
-            renderMaze(); 
-            isSelectionClick = false;
+            isInternalClick = true; 
+            renderMaze(true); 
+            isInternalClick = false;
         };
 
-        mazeInput.addEventListener('input', function() {
-            if (this.value.trim() === '') {
-                fileNameDisplay.style.display = 'none';
-                currentFileNameError = null; 
-                renderMaze();
-            }
-        });
+        mazeInput.addEventListener('input', function() { if (this.value.trim() === '') { fileNameDisplay.style.display = 'none'; renderMaze(); } });
 
-        const dropZone = document.getElementById('drop-zone');
-        const fileInput = document.getElementById('file-upload');
-
-        function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
-        const preventEvents =['dragenter', 'dragover', 'dragleave', 'drop'];
-        preventEvents.forEach(eventName => {
-            document.body.addEventListener(eventName, preventDefaults, false);
-            dropZone.addEventListener(eventName, preventDefaults, false);
-        });
-
-        const highlightEvents =['dragenter', 'dragover'];
-        highlightEvents.forEach(eventName => {
-            dropZone.addEventListener(eventName, () => dropZone.classList.add('dragover'), false);
-        });
-
-        const unhighlightEvents =['dragleave', 'drop'];
-        unhighlightEvents.forEach(eventName => {
-            dropZone.addEventListener(eventName, () => dropZone.classList.remove('dragover'), false);
-        });
-
-        dropZone.addEventListener('drop', (e) => {
-            const dt = e.dataTransfer;
-            if (dt.files.length > 0) handleFile(dt.files[0]);
-        }, false);
-
-        fileInput.addEventListener('change', (e) => {
-            if (e.target.files.length > 0) handleFile(e.target.files[0]);
-            fileInput.value = ''; 
-        });
+        const dropZone = document.getElementById('drop-zone'), fileInput = document.getElementById('file-upload');
+        const preventDefaults = (e) => { e.preventDefault(); e.stopPropagation(); };
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => { document.body.addEventListener(evt, preventDefaults); dropZone.addEventListener(evt, preventDefaults); });
+        ['dragenter', 'dragover'].forEach(evt => dropZone.addEventListener(evt, () => dropZone.classList.add('dragover')));
+        ['dragleave', 'drop'].forEach(evt => dropZone.addEventListener(evt, () => dropZone.classList.remove('dragover')));
+        dropZone.addEventListener('drop', (e) => { if (e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]); });
+        fileInput.addEventListener('change', (e) => { if (e.target.files.length > 0) handleFile(e.target.files[0]); fileInput.value = ''; });
 
         function handleFile(file) {
-            if (!file.name.toLowerCase().endsWith('.txt')) {
-                alert("Error: Only .txt files are allowed.");
-                return;
-            }
-
-            const baseName = file.name.slice(0, -4); 
-            if (!/^[a-zA-Z0-9\-_]+$/.test(baseName)) {
-                currentFileNameError = `File name '${file.name}' contains invalid characters. Only letters, numbers, hyphens, and underscores are allowed.`;
-            } else {
-                currentFileNameError = null;
-            }
-
             const reader = new FileReader();
-            reader.onload = function(e) {
-                const content = e.target.result;
-                if (content.charAt(0) !== 'o' && content.charAt(0) !== '+') {
-                    alert("Error: Not a valid maze file. The file must start with the letter 'o' (or '+').");
-                    return;
-                }
-                mazeInput.value = content;
-                
-                fileNameDisplay.innerHTML = `Loaded: <span>${file.name}</span>`;
-                fileNameDisplay.style.display = 'block';
-
-                renderMaze();
-            };
+            reader.onload = (e) => { mazeInput.value = e.target.result; fileNameDisplay.innerHTML = `Loaded: <span>${file.name}</span>`; fileNameDisplay.style.display = 'block'; renderMaze(); };
             reader.readAsText(file);
         }
 
-        function renderMaze() {
+        async function renderMaze(skipPathfinding = false) {
             let text = mazeInput.value;
-            const canvas = document.getElementById('maze-canvas');
-            const ctx = canvas.getContext('2d');
-            const validationPanel = document.getElementById('validation-panel');
+            let textChanged = (text !== lastRenderedText);
+
+            // If the text actually changed, clear caches and prepare for a new search
+            if (textChanged) {
+                selectedRouteIndex = 0;
+                window.selectedPathKey = null;
+                window.userDeselected = false;
+                window.cachedPaths = null;
+                lastRenderedText = text;
+            }
+
+            let needsSearch = (textChanged || !window.cachedPaths);
+
+            if (needsSearch && window.isSearching) {
+                window.cancelSearch = true;
+                while(window.isSearching) {
+                    await new Promise(r => setTimeout(r, 50));
+                }
+            }
+
+            const canvas = document.getElementById('maze-canvas'), ctx = canvas.getContext('2d'), 
+                  validationPanel = document.getElementById('validation-panel'),
+                  routesContainer = document.getElementById('routes-container'),
+                  routesList = document.getElementById('routes-list');
             
-            const isDarkMode = document.getElementById('theme-switch').checked;
-            const showRoute = document.getElementById('route-switch').checked;
+            const btnRender = document.getElementById('btn-render');
+            const btnCancel = document.getElementById('btn-cancel');
+
+            const isDarkMode = document.getElementById('theme-switch').checked, 
+                  showRoutes = document.getElementById('route-switch').checked,
+                  showDeadends = document.getElementById('deadend-switch').checked,
+                  isDiagonal = document.getElementById('diagonal-switch').checked;
+
+            if (text.trim() === '') { ctx.clearRect(0,0,canvas.width,canvas.height); validationPanel.style.display = 'none'; routesContainer.style.display = 'none'; return; }
+            if (text.includes('+')) { text = text.replace(/\+/g, 'o'); mazeInput.value = text; }
+
+            let lines = text.split('\n').filter(l => l.includes('o') || l.includes('|'));
+            if (lines.length < 3) return;
+            const cols = Math.floor((Math.max(...lines.map(l => l.length)) - 1) / 4), rows = Math.floor((lines.length - 1) / 2);
+            const cellSize = 40, padding = 40;
+            canvas.width = cols * cellSize + padding * 2; canvas.height = rows * cellSize + padding * 2;
 
             const theme = {
-                bg: isDarkMode ? '#000000' : '#ffffff',
-                grid: isDarkMode ? '#2a2a2a' : '#e1e4e8',
-                wall: isDarkMode ? '#ff0000' : '#000000',
-                post: isDarkMode ? '#ffffff' : '#bbbbbb',
-                pathLine: isDarkMode ? 'rgba(0, 255, 255, 0.4)' : 'rgba(0, 120, 215, 0.3)',
-                errStroke: isDarkMode ? 'rgba(255, 221, 0, 0.9)' : 'rgba(215, 58, 73, 0.9)',
-                errFillArea: isDarkMode ? 'rgba(255, 221, 0, 0.3)' : 'rgba(215, 58, 73, 0.3)',
-                errFillItem: isDarkMode ? 'rgba(255, 221, 0, 0.8)' : 'rgba(215, 58, 73, 0.8)',
-                errFadedFill: isDarkMode ? 'rgba(255, 221, 0, 0.05)' : 'rgba(215, 58, 73, 0.05)',
-                errFadedStroke: isDarkMode ? 'rgba(255, 221, 0, 0.1)' : 'rgba(215, 58, 73, 0.1)'
+                bg: isDarkMode ? '#000000' : '#ffffff', grid: isDarkMode ? '#2a2a2a' : '#e1e4e8',
+                wall: isDarkMode ? '#ff0000' : '#000000', post: isDarkMode ? '#ffffff' : '#bbbbbb',
+                activePath: '#00ffff', inactivePath: isDarkMode ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)',
+                deadend: isDarkMode ? 'rgba(255, 0, 0, 0.25)' : 'rgba(255, 0, 0, 0.12)'
             };
 
-            if (!isSelectionClick) {
-                if (text !== lastRenderedText) {
-                    activeErrorIndex = -1;
-                    lastRenderedText = text;
-                }
-            }
+            ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = theme.bg; ctx.fillRect(padding - 20, padding - 20, cols * cellSize + 40, rows * cellSize + 40);
+            ctx.strokeStyle = theme.grid; ctx.lineWidth = 1;
+            for (let r = 0; r <= rows; r++) { ctx.beginPath(); ctx.moveTo(padding, padding + r * cellSize); ctx.lineTo(padding + cols * cellSize, padding + r * cellSize); ctx.stroke(); }
+            for (let c = 0; c <= cols; c++) { ctx.beginPath(); ctx.moveTo(padding + c * cellSize, padding); ctx.lineTo(padding + c * cellSize, padding + rows * cellSize); ctx.stroke(); }
 
-            if (text.trim() === '') {
-                ctx.fillStyle = '#ffffff';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                validationPanel.style.display = 'none';
-                return;
-            }
-            
-            if (text.includes('+')) {
-                text = text.replace(/\+/g, 'o');
-                mazeInput.value = text;
-                lastRenderedText = text;
-                setTimeout(() => alert("Detected '+' characters used as posts. They have been automatically converted to 'o'."), 10);
-            }
-
-            let lines = text.split('\n');
-            const startIndex = lines.findIndex(l => l.includes('o'));
-            if (startIndex === -1) {
-                validationPanel.style.display = 'block';
-                validationPanel.className = 'invalid';
-                validationPanel.innerHTML = `<strong>❌ Error:</strong> Not a valid maze format. No post characters ('o') found.`;
-                ctx.fillStyle = '#ffffff';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                return;
-            }
-
-            lines = lines.slice(startIndex);
-            while (lines.length > 0 && lines[lines.length - 1].trim() === '') { lines.pop(); }
-            lines = lines.map(l => l.trimEnd());
-            
-            const maxLength = Math.max(...lines.map(l => l.length));
-            lines = lines.map(l => l.padEnd(maxLength, ' '));
-
-            const cols = Math.floor((maxLength - 1) / 4);
-            const rows = Math.floor((lines.length - 1) / 2);
-            
-            const cellSize = 40;
-            const padding = 40; 
-            
-            canvas.width = cols * cellSize + padding * 2;
-            canvas.height = rows * cellSize + padding * 2;
-
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            const halfCell = cellSize / 2;
-            ctx.fillStyle = theme.bg;
-            ctx.fillRect(padding - halfCell, padding - halfCell, (cols * cellSize) + cellSize, (rows * cellSize) + cellSize);
-
-            ctx.strokeStyle = theme.grid; 
-            ctx.lineWidth = 1;
-            for (let r = 0; r <= rows; r++) {
-                ctx.beginPath(); ctx.moveTo(padding, padding + r * cellSize); ctx.lineTo(padding + cols * cellSize, padding + r * cellSize); ctx.stroke();
-            }
-            for (let c = 0; c <= cols; c++) {
-                ctx.beginPath(); ctx.moveTo(padding + c * cellSize, padding); ctx.lineTo(padding + c * cellSize, padding + rows * cellSize); ctx.stroke();
-            }
-
-            let startNode = null;
-            let goalNodes =[];
+            let start = null, goals = [];
             for (let r = 0; r < rows; r++) {
-                const rowTextCell = lines[r * 2 + 1] || '';
+                const line = lines[r * 2 + 1] || "";
                 for (let c = 0; c < cols; c++) {
-                    const centerChar = rowTextCell.charAt(c * 4 + 2);
-                    const x = padding + c * cellSize;
-                    const y = padding + r * cellSize;
-                    if (centerChar === 'S') {
-                        startNode = {r, c};
-                        ctx.fillStyle = '#d4edda'; ctx.fillRect(x, y, cellSize, cellSize);
-                        ctx.fillStyle = '#155724'; ctx.font = "bold 20px Arial"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText("S", x + cellSize / 2, y + cellSize / 2);
-                    } else if (centerChar === 'G') {
-                        goalNodes.push(`${r},${c}`);
-                        ctx.fillStyle = '#e8d4ed'; ctx.fillRect(x, y, cellSize, cellSize);
-                        ctx.fillStyle = '#4a1557'; ctx.font = "bold 20px Arial"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText("G", x + cellSize / 2, y + cellSize / 2);
+                    const char = line.charAt(c * 4 + 2);
+                    if (char === 'S') start = {r, c};
+                    if (char === 'G') goals.push({r, c});
+                }
+            }
+
+            // --- 1. DEAD-END PRUNING LOGIC ---
+            let isDeadEnd = Array.from({length: rows}, () => Array(cols).fill(false));
+            let changed = true;
+            while(changed) {
+                changed = false;
+                for(let r=0; r<rows; r++) {
+                    for(let c=0; c<cols; c++) {
+                        if (isDeadEnd[r][c] || (start && r===start.r && c===start.c) || goals.some(g => g.r===r && g.c===c)) continue;
+                        
+                        let exits = 0;
+                        if (r > 0 && lines[r*2].substring(c*4+1, c*4+4) !== '---' && !isDeadEnd[r-1][c]) exits++;
+                        if (r < rows-1 && lines[r*2+2].substring(c*4+1, c*4+4) !== '---' && !isDeadEnd[r+1][c]) exits++;
+                        if (c > 0 && lines[r*2+1].charAt(c*4) !== '|' && !isDeadEnd[r][c-1]) exits++;
+                        if (c < cols-1 && lines[r*2+1].charAt(c*4+4) !== '|' && !isDeadEnd[r][c+1]) exits++;
+                        
+                        if (exits <= 1) { isDeadEnd[r][c] = true; changed = true; }
                     }
                 }
             }
 
-            let solutionPath = null;
-            if (startNode && goalNodes.length > 0) {
-                let queue = [startNode];
-                let visited = new Set();
-                visited.add(`${startNode.r},${startNode.c}`);
-                let parents = {};
+            // --- 2. ASYNC PATH EXTRACTION (Max-Visits BFS) ---
+            let allPaths = [];
+            const MAX_ROUTES = 200;
+            
+            if (start && !isDeadEnd[start.r][start.c]) {
+                if (needsSearch) {
+                    try {
+                        window.isSearching = true;
+                        window.cancelSearch = false;
+                        btnRender.style.display = 'none';
+                        btnCancel.style.display = 'block';
+                        
+                        validationPanel.style.display = 'block';
+                        validationPanel.className = 'searching';
+                        validationPanel.innerHTML = `<strong>🔄 Searching for routes...</strong><br>Initializing map...`;
 
-                let foundGoal = null;
+                        let queue = [{ r: start.r, c: start.c, path: [{r: start.r, c: start.c, dir: 'N'}], visited: new Set([`${start.r},${start.c}`]) }];
+                        const dirOffsets = { 'N': {dr: -1, dc: 0}, 'S': {dr: 1, dc: 0}, 'E': {dr: 0, dc: 1}, 'W': {dr: 0, dc: -1} };
+                        const allowedMoves = { 'N': ['N','E','W'], 'S': ['S','E','W'], 'E': ['E','N','S'], 'W': ['W','N','S'] };
 
-                while(queue.length > 0) {
-                    let curr = queue.shift();
-                    let r = curr.r;
-                    let c = curr.c;
+                        // Max-Visits Tracker: Allows 150 distinct paths to pass through any cell
+                        let expandCount = Array.from({length: rows}, () => Array(cols).fill(0));
+                        let iterations = 0;
 
-                    if (goalNodes.includes(`${r},${c}`)) {
-                        foundGoal = curr;
-                        break;
-                    }
+                        while (queue.length > 0 && allPaths.length < MAX_ROUTES) {
+                            if (window.cancelSearch) break;
+                            
+                            if (iterations++ % 2000 === 0) {
+                                validationPanel.innerHTML = `<strong>🔄 Searching for routes...</strong><br>Found ${allPaths.length} routes so far. (Checked ${iterations} paths)`;
+                                await new Promise(r => setTimeout(r, 0)); // Yield to browser
+                            }
 
-                    if (r > 0 && lines[r*2].substring(c*4+1, c*4+4) !== '---') {
-                        if (!visited.has(`${r-1},${c}`)) {
-                            visited.add(`${r-1},${c}`);
-                            parents[`${r-1},${c}`] = curr;
-                            queue.push({r: r-1, c: c});
+                            let curr = queue.shift();
+                            
+                            if (goals.some(g => g.r === curr.r && g.c === curr.c)) { 
+                                allPaths.push(curr.path); 
+                                continue; 
+                            }
+
+                            if (expandCount[curr.r][curr.c] >= 150) {
+                                continue;
+                            }
+                            expandCount[curr.r][curr.c]++;
+                            
+                            let robotDir = curr.path[curr.path.length - 1].dir;
+                            for (let nextDir of allowedMoves[robotDir]) {
+                                let dr = dirOffsets[nextDir].dr, dc = dirOffsets[nextDir].dc;
+                                let nr = curr.r + dr, nc = curr.c + dc;
+
+                                if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && !isDeadEnd[nr][nc]) {
+                                    let blocked = false;
+                                    if (dr === -1) blocked = lines[curr.r*2].substring(curr.c*4+1, curr.c*4+4) === '---';
+                                    if (dr === 1)  blocked = lines[curr.r*2+2].substring(curr.c*4+1, curr.c*4+4) === '---';
+                                    if (dc === -1) blocked = lines[curr.r*2+1].charAt(curr.c*4) === '|';
+                                    if (dc === 1)  blocked = lines[curr.r*2+1].charAt(curr.c*4+4) === '|';
+
+                                    if (!blocked && !curr.visited.has(`${nr},${nc}`)) {
+                                        let newVisited = new Set(curr.visited); 
+                                        newVisited.add(`${nr},${nc}`);
+                                        queue.push({ r: nr, c: nc, path: [...curr.path, {r: nr, c: nc, dir: nextDir}], visited: newVisited }); 
+                                    }
+                                }
+                            }
                         }
+                    } finally {
+                        window.isSearching = false;
+                        btnRender.style.display = 'block';
+                        btnCancel.style.display = 'none';
+                        window.cachedPaths = allPaths;
                     }
-                    if (r < rows-1 && lines[r*2+2].substring(c*4+1, c*4+4) !== '---') {
-                        if (!visited.has(`${r+1},${c}`)) {
-                            visited.add(`${r+1},${c}`);
-                            parents[`${r+1},${c}`] = curr;
-                            queue.push({r: r+1, c: c});
-                        }
-                    }
-                    if (c > 0 && lines[r*2+1].charAt(c*4) !== '|') {
-                        if (!visited.has(`${r},${c-1}`)) {
-                            visited.add(`${r},${c-1}`);
-                            parents[`${r},${c-1}`] = curr;
-                            queue.push({r: r, c: c-1});
-                        }
-                    }
-                    if (c < cols-1 && lines[r*2+1].charAt(c*4+4) !== '|') {
-                        if (!visited.has(`${r},${c+1}`)) {
-                            visited.add(`${r},${c+1}`);
-                            parents[`${r},${c+1}`] = curr;
-                            queue.push({r: r, c: c+1});
-                        }
-                    }
-                }
-
-                if (foundGoal) {
-                    solutionPath =[];
-                    let curr = foundGoal;
-                    while(curr) {
-                        solutionPath.push(curr);
-                        curr = parents[`${curr.r},${curr.c}`];
-                    }
-                    solutionPath.reverse(); 
+                } else {
+                    allPaths = window.cachedPaths || [];
                 }
             }
 
-            if (solutionPath && showRoute) {
-                ctx.strokeStyle = theme.pathLine;
-                ctx.lineWidth = 6;
-                ctx.lineCap = 'round';
-                ctx.lineJoin = 'round';
-                ctx.beginPath();
-                for (let i = 0; i < solutionPath.length; i++) {
-                    let pt = solutionPath[i];
-                    let x = padding + pt.c * cellSize + cellSize / 2;
-                    let y = padding + pt.r * cellSize + cellSize / 2;
-                    if (i === 0) ctx.moveTo(x, y);
-                    else ctx.lineTo(x, y);
+            // --- 3. PROCESS, CALCULATE TURNS, AND SORT ---
+            let processedPaths = allPaths.map(p => {
+                let rawMoves = [];
+                let robotDir = p.length > 1 ? p[1].dir : p[0].dir;
+                
+                const turnMap = { 'N':{'N':'F','E':'R','W':'L'}, 'S':{'S':'F','W':'R','E':'L'}, 'E':{'E':'F','S':'R','N':'L'}, 'W':{'W':'F','N':'R','S':'L'}};
+                for(let i=1; i<p.length; i++) {
+                    let move = turnMap[robotDir][p[i].dir];
+                    if (move) { rawMoves.push(move); if (move !== 'F') robotDir = p[i].dir; }
                 }
-                ctx.stroke();
+
+                let str = "", turns = 0, length = 0;
+
+                if (!isDiagonal) {
+                    let fCount = 0;
+                    for (let i = 0; i < rawMoves.length; i++) {
+                        let m = rawMoves[i];
+                        if (m === 'F') { fCount++; } 
+                        else {
+                            if (fCount > 0) { str += "F" + fCount + " "; fCount = 0; }
+                            str += "SS90" + m + " "; turns++; fCount = 1;
+                        }
+                    }
+                    if (fCount > 0) str += "F" + fCount;
+                } else {
+                    let rawStr = rawMoves.join("") + "S", outCommands = [], state = 'PathStart', x = 0, idx = 0;
+                    while (state !== 'PathExit' && idx < rawStr.length) {
+                        let c = rawStr[idx++];
+                        switch (state) {
+                            case 'PathStart':   if (c==='F'){x=1; state='PathOrtho_F';} else state='PathStop'; break;
+                            case 'PathOrtho_F': if (c==='F')x++; else if(c==='R'){outCommands.push(`F${x}`); state='PathOrtho_R';} else if(c==='L'){outCommands.push(`F${x}`); state='PathOrtho_L';} else if(c==='S'){outCommands.push(`F${x}`); state='PathStop';} else state='PathStop'; break;
+                            case 'PathOrtho_R': if (c==='F'){outCommands.push("SS90SR"); x=2; state='PathOrtho_F';} else if(c==='R')state='PathOrtho_RR'; else if(c==='L'){outCommands.push("SD45R"); x=2; state='PathDiag_RL';} else if(c==='S'){outCommands.push("SS90ER"); outCommands.push("F1"); state='PathStop';} else state='PathStop'; break;
+                            case 'PathOrtho_L': if (c==='F'){outCommands.push("SS90SL"); x=2; state='PathOrtho_F';} else if(c==='R'){outCommands.push("SD45L"); x=2; state='PathDiag_LR';} else if(c==='L')state='PathOrtho_LL'; else if(c==='S'){outCommands.push("SS90EL"); outCommands.push("F1"); state='PathStop';} else state='PathStop'; break;
+                            case 'PathOrtho_RR':if (c==='F'){outCommands.push("SS180R"); x=2; state='PathOrtho_F';} else if(c==='L'){outCommands.push("SD135R"); x=2; state='PathDiag_RL';} else if(c==='S'){outCommands.push("SS180R"); outCommands.push("F1"); state='PathStop';} else state='PathStop'; break;
+                            case 'PathOrtho_LL':if (c==='F'){outCommands.push("SS180L"); x=2; state='PathOrtho_F';} else if(c==='R'){outCommands.push("SD135L"); x=2; state='PathDiag_LR';} else if(c==='S'){outCommands.push("SS180L"); outCommands.push("F1"); state='PathStop';} else state='PathStop'; break;
+                            case 'PathDiag_RL': if (c==='F'){outCommands.push(`D${x}`); outCommands.push("DS45L"); x=2; state='PathOrtho_F';} else if(c==='R'){x++; state='PathDiag_LR';} else if(c==='L')state='PathDiag_LL'; else if(c==='S'){outCommands.push(`D${x}`); outCommands.push("DS45L"); outCommands.push("F1"); state='PathStop';} else state='PathStop'; break;
+                            case 'PathDiag_LR': if (c==='F'){outCommands.push(`D${x}`); outCommands.push("DS45R"); x=2; state='PathOrtho_F';} else if(c==='R')state='PathDiag_RR'; else if(c==='L'){x++; state='PathDiag_RL';} else if(c==='S'){outCommands.push(`D${x}`); outCommands.push("DS45R"); outCommands.push("F1"); state='PathStop';} else state='PathStop'; break;
+                            case 'PathDiag_LL': if (c==='F'){outCommands.push(`D${x}`); outCommands.push("DS135L"); x=2; state='PathOrtho_F';} else if(c==='R'){outCommands.push(`D${x}`); outCommands.push("DD90L"); x=2; state='PathDiag_LR';} else if(c==='S'){outCommands.push(`D${x}`); outCommands.push("DS135L"); outCommands.push("F1"); state='PathStop';} else state='PathStop'; break;
+                            case 'PathDiag_RR': if (c==='F'){outCommands.push(`D${x}`); outCommands.push("DS135R"); x=2; state='PathOrtho_F';} else if(c==='L'){outCommands.push(`D${x}`); outCommands.push("DD90R"); x=2; state='PathDiag_RL';} else if(c==='S'){outCommands.push(`D${x}`); outCommands.push("DS135R"); outCommands.push("F1"); state='PathStop';} else state='PathStop'; break;
+                            case 'PathStop':    outCommands.push("CMD_STOP"); state='PathExit'; break;
+                            default:            state='PathExit'; break;
+                        }
+                    }
+                    if (state !== 'PathExit') outCommands.push("CMD_STOP");
+
+                    str = outCommands.filter(cmd => !cmd.startsWith("CMD_")).join(' ');
+                }
+
+                turns = 0; length = 0;
+                let cmds = str.split(' ').filter(c => c.trim() !== '');
+                cmds.forEach(cmd => {
+                    let fMatch = cmd.match(/^F(\d+)$/);
+                    let dMatch = cmd.match(/^D(\d+)$/);
+                    if (fMatch) length += parseInt(fMatch[1], 10) * 180;
+                    else if (dMatch) length += parseInt(dMatch[1], 10) * 127.2792;
+                    else turns++;
+                });
+
+                // Unique Geometric Key to maintain selection across sorts and toggles
+                let pathKey = p.map(pt => `${pt.r},${pt.c}`).join(';');
+                return { path: p, cells: p.length - 1, turns: turns, str: str.trim(), length: length, key: pathKey };
+            });
+
+            processedPaths.sort((a, b) => {
+                if (Math.abs(a.length - b.length) > 0.1) return a.length - b.length;
+                return a.turns - b.turns;
+            });
+
+            window.currentPaths = processedPaths;
+
+            // Restoring active selection state without re-selecting default 0 if user cleared it
+            if (window.selectedPathKey) {
+                let foundIdx = processedPaths.findIndex(p => p.key === window.selectedPathKey);
+                if (foundIdx !== -1) {
+                    selectedRouteIndex = foundIdx;
+                } else {
+                    selectedRouteIndex = -1;
+                }
+            } else if (!window.userDeselected && processedPaths.length > 0) {
+                selectedRouteIndex = 0;
+                window.selectedPathKey = processedPaths[0].key;
+            } else {
+                selectedRouteIndex = -1;
             }
 
-            ctx.strokeStyle = theme.wall;
-            ctx.lineWidth = 5; 
-            ctx.lineCap = 'square';
-            ctx.beginPath();
+            // --- 4. RENDERING ---
+            if (start) { ctx.fillStyle = '#d4edda'; ctx.fillRect(padding + start.c*cellSize, padding + start.r*cellSize, cellSize, cellSize); }
+            goals.forEach(g => { ctx.fillStyle = '#e8d4ed'; ctx.fillRect(padding + g.c*cellSize, padding + g.r*cellSize, cellSize, cellSize); });
+
+            if (showDeadends) {
+                ctx.fillStyle = theme.deadend;
+                for(let r=0; r<rows; r++) for(let c=0; c<cols; c++) if(isDeadEnd[r][c]) ctx.fillRect(padding+c*cellSize, padding+r*cellSize, cellSize, cellSize);
+            }
+
+            let turnMarkers = []; 
+
+            if (showRoutes) {
+                const L_ORTHO = 90;
+                const L_DIAG = 127.2792 / 2; // ~63.6396mm
+
+                processedPaths.forEach((routeObj, idx) => {
+                    if (selectedRouteIndex !== -1 && idx !== selectedRouteIndex) return;
+                    ctx.strokeStyle = (selectedRouteIndex === idx) ? theme.activePath : theme.inactivePath;
+                    ctx.lineWidth = (selectedRouteIndex === idx) ? 6 : 2;
+                    ctx.lineCap = "round"; ctx.lineJoin = "round"; 
+                    ctx.beginPath();
+                    
+                    // Parse visual commands into a geometric Sequence list
+                    let seq = [];
+                    let cmds = routeObj.str.split(' ').filter(c => c.trim() !== '');
+                    cmds.forEach(cmd => {
+                        let matchF = cmd.match(/^F(\d+)$/);
+                        let matchD = cmd.match(/^D(\d+)$/);
+                        if (matchF) {
+                            seq.push({ type: 'F', dist: parseInt(matchF[1], 10) * 180 });
+                        } else if (matchD) {
+                            seq.push({ type: 'D', dist: parseInt(matchD[1], 10) * 127.2792 });
+                        } else {
+                            let angleMatch = cmd.match(/\d+/);
+                            let deg = angleMatch ? parseInt(angleMatch[0], 10) : 90;
+                            let tType = cmd.substring(0, 2);
+                            let sign = (cmd.slice(-1) === 'R') ? 1 : -1;
+                            
+                            let in_off = L_ORTHO, out_off = L_ORTHO;
+                            if (tType === 'SD') {
+                                out_off = L_DIAG;
+                                if (deg === 45) {
+                                    in_off = L_ORTHO + 90; // Reduced preceding straight by 1/2 a straight
+                                }
+                            }
+                            else if (tType === 'DS') {
+                                in_off = L_DIAG;
+                                if (deg === 45) {
+                                    out_off = L_ORTHO + 90; // Shifted exit point by 1/2 a cell along orthogonal
+                                }
+                            }
+                            else if (tType === 'DD') { in_off = L_DIAG; out_off = L_DIAG; }
+                            
+                            seq.push({ type: 'T', tType, deg, sign, in_off, out_off });
+                        }
+                    });
+
+                    // Engine State Tracking
+                    let initialDir = routeObj.path.length > 1 ? routeObj.path[1].dir : routeObj.path[0].dir;
+                    let tx = padding + start.c * cellSize + cellSize / 2;
+                    let ty = padding + start.r * cellSize + cellSize / 2;
+                    let ta = 0;
+                    
+                    if (initialDir === 'N') ta = -90;
+                    else if (initialDir === 'E') ta = 0;
+                    else if (initialDir === 'S') ta = 90;
+                    else if (initialDir === 'W') ta = 180;
+
+                    // Draw the initial alignment strictly from back wall to start center
+                    let bx = tx - (cellSize / 2) * Math.cos(ta * Math.PI / 180);
+                    let by = ty - (cellSize / 2) * Math.sin(ta * Math.PI / 180);
+                    ctx.moveTo(bx, by);
+                    ctx.lineTo(tx, ty);
+
+                    const move = (dist_mm) => {
+                        if (dist_mm <= 0.01) return;
+                        let px = dist_mm * (cellSize / 180);
+                        tx += px * Math.cos(ta * Math.PI / 180);
+                        ty += px * Math.sin(ta * Math.PI / 180);
+                        ctx.lineTo(tx, ty);
+                    };
+                    
+                    let prev_out_off = 0;
+
+                    for (let i = 0; i < seq.length; i++) {
+                        let item = seq[i];
+                        
+                        if (item.type === 'F' || item.type === 'D') {
+                            let next_in_off = 0;
+                            // Dynamically subtract next turn entry offset to prevent line overshoot
+                            if (i + 1 < seq.length && seq[i+1].type === 'T') {
+                                next_in_off = seq[i+1].in_off;
+                            }
+                            
+                            let draw_dist = item.dist - prev_out_off - next_in_off;
+                            if (draw_dist > 0.01) {
+                                move(draw_dist);
+                            }
+                            prev_out_off = 0;
+                        } else if (item.type === 'T') {
+                            // Turn Starts: Log exact entry boundary coordinate
+                            if (selectedRouteIndex === -1 || idx === selectedRouteIndex) {
+                                turnMarkers.push({ x: tx, y: ty, type: 'start' });
+                            }
+
+                            const drawCurve = (l_in_mm, l_out_mm, angle_deg) => {
+                                let l_in = l_in_mm * (cellSize / 180);
+                                let l_out = l_out_mm * (cellSize / 180);
+                                let cx = tx + l_in * Math.cos(ta * Math.PI / 180);
+                                let cy = ty + l_in * Math.sin(ta * Math.PI / 180);
+                                ta += angle_deg;
+                                let ex = cx + l_out * Math.cos(ta * Math.PI / 180);
+                                let ey = cy + l_out * Math.sin(ta * Math.PI / 180);
+                                ctx.quadraticCurveTo(cx, cy, ex, ey);
+                                tx = ex; ty = ey;
+                            };
+
+                            if (item.tType === 'SS' && item.deg === 90) drawCurve(L_ORTHO, L_ORTHO, 90 * item.sign);
+                            else if (item.tType === 'SD' && item.deg === 45) drawCurve(L_ORTHO, L_DIAG, 45 * item.sign);
+                            else if (item.tType === 'DS' && item.deg === 45) drawCurve(L_DIAG, L_ORTHO, 45 * item.sign);
+                            else if (item.tType === 'DD' && item.deg === 90) drawCurve(L_DIAG, L_DIAG, 90 * item.sign);
+                            else if (item.tType === 'SS' && item.deg === 180) { // U-Turns seamlessly span adjacent cells
+                                drawCurve(L_ORTHO, L_ORTHO, 90 * item.sign);
+                                drawCurve(L_ORTHO, L_ORTHO, 90 * item.sign);
+                            } else if (item.tType === 'SD' && item.deg === 135) { // Compound Ortho -> Adjacent -> Diagonal entry
+                                drawCurve(L_ORTHO, 45, 90 * item.sign);
+                                drawCurve(45, L_DIAG, 45 * item.sign);
+                            } else if (item.tType === 'DS' && item.deg === 135) {
+                                drawCurve(L_DIAG, 45, 45 * item.sign);
+                                drawCurve(45, L_ORTHO, 90 * item.sign);
+                            } else {
+                                drawCurve(item.in_off, item.out_off, item.deg * item.sign);
+                            }
+                            
+                            // Turn Ends: Log exact exit boundary coordinate
+                            if (selectedRouteIndex === -1 || idx === selectedRouteIndex) {
+                                turnMarkers.push({ x: tx, y: ty, type: 'end' });
+                            }
+                            prev_out_off = item.out_off;
+                        }
+                    }
+                    
+                    ctx.stroke();
+                });
+            }
+
+            // Draw maze bounds
+            ctx.strokeStyle = theme.wall; ctx.lineWidth = 5; ctx.lineCap = 'square'; ctx.beginPath();
             for (let r = 0; r < rows; r++) {
-                const rowTextPost = lines[r * 2] || '';
-                const rowTextCell = lines[r * 2 + 1] || '';
-                const rowTextPostNext = lines[r * 2 + 2] || '';
                 for (let c = 0; c < cols; c++) {
-                    const topStr = rowTextPost.substring(c * 4 + 1, c * 4 + 4);
-                    const bottomStr = rowTextPostNext.substring(c * 4 + 1, c * 4 + 4);
-                    const leftChar = rowTextCell.charAt(c * 4);
-                    const rightChar = rowTextCell.charAt(c * 4 + 4);
-                    const x = padding + c * cellSize; const y = padding + r * cellSize;
-                    if (topStr === '---') { ctx.moveTo(x, y); ctx.lineTo(x + cellSize, y); }
-                    if (leftChar === '|') { ctx.moveTo(x, y); ctx.lineTo(x, y + cellSize); }
-                    if (r === rows - 1 && bottomStr === '---') { ctx.moveTo(x, y + cellSize); ctx.lineTo(x + cellSize, y + cellSize); }
-                    if (c === cols - 1 && rightChar === '|') { ctx.moveTo(x + cellSize, y); ctx.lineTo(x + cellSize, y + cellSize); }
+                    if (lines[r*2].substring(c*4+1, c*4+4) === '---') { ctx.moveTo(padding+c*cellSize, padding+r*cellSize); ctx.lineTo(padding+(c+1)*cellSize, padding+r*cellSize); }
+                    if (lines[r*2+1].charAt(c*4) === '|') { ctx.moveTo(padding+c*cellSize, padding+r*cellSize); ctx.lineTo(padding+c*cellSize, padding+(r+1)*cellSize); }
+                    if (r === rows - 1 && lines[r*2+2].substring(c*4+1, c*4+4) === '---') { ctx.moveTo(padding+c*cellSize, padding+(r+1)*cellSize); ctx.lineTo(padding+(c+1)*cellSize, padding+(r+1)*cellSize); }
+                    if (c === cols - 1 && lines[r*2+1].charAt(c*4+4) === '|') { ctx.moveTo(padding+(c+1)*cellSize, padding+r*cellSize); ctx.lineTo(padding+(c+1)*cellSize, padding+(r+1)*cellSize); }
                 }
             }
             ctx.stroke();
-
             ctx.fillStyle = theme.post;
-            for (let r = 0; r <= rows; r++) {
-                for (let c = 0; c <= cols; c++) {
-                    ctx.fillRect((padding + c * cellSize) - 2.5, (padding + r * cellSize) - 2.5, 5, 5);
+            for (let r = 0; r <= rows; r++) for (let c = 0; c <= cols; c++) ctx.fillRect(padding+c*cellSize-2.5, padding+r*cellSize-2.5, 5, 5);
+
+            // Overlay turn markers on top of everything except text
+            turnMarkers.forEach(marker => {
+                ctx.beginPath();
+                ctx.arc(marker.x, marker.y, 4, 0, 2 * Math.PI);
+                if (marker.type === 'start') {
+                    ctx.fillStyle = '#2ea44f'; // Green for entry boundary
+                    ctx.strokeStyle = '#ffffff';
+                } else {
+                    ctx.fillStyle = '#f03e3e'; // Red for exit boundary
+                    ctx.strokeStyle = '#ffffff';
                 }
-            }
+                ctx.lineWidth = 1.5;
+                ctx.fill();
+                ctx.stroke();
+            });
 
-            let errors =[];
-            let goalCount = 0;
-            let startCount = 0;
+            ctx.font = "bold 20px Arial"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+            if (start) { ctx.fillStyle = '#155724'; ctx.fillText("S", padding + start.c*cellSize + cellSize/2, padding + start.r*cellSize + cellSize/2); }
+            goals.forEach(g => { ctx.fillStyle = '#4a1557'; ctx.fillText("G", padding + g.c*cellSize + cellSize/2, padding + g.r*cellSize + cellSize/2); });
 
-            if (currentFileNameError) {
-                errors.push({
-                    msg: currentFileNameError,
-                    draw: null 
-                });
-            }
-
-            function pushMissingWall(msg, c, r, edge) {
-                errors.push({
-                    msg: msg,
-                    draw: (ctx, colors) => {
-                        ctx.strokeStyle = colors.stroke; 
-                        ctx.lineWidth = 6; 
-                        ctx.setLineDash([6, 4]);
-                        ctx.beginPath();
-                        const x = padding + c * cellSize; const y = padding + r * cellSize;
-                        if (edge === 'top') { ctx.moveTo(x, y); ctx.lineTo(x + cellSize, y); }
-                        else if (edge === 'bottom') { ctx.moveTo(x, y + cellSize); ctx.lineTo(x + cellSize, y + cellSize); }
-                        else if (edge === 'left') { ctx.moveTo(x, y); ctx.lineTo(x, y + cellSize); }
-                        else if (edge === 'right') { ctx.moveTo(x + cellSize, y); ctx.lineTo(x + cellSize, y + cellSize); }
-                        ctx.stroke();
-                        ctx.setLineDash([]); 
-                    }
-                });
-            }
-
-            for (let r = 0; r <= rows * 2; r++) {
-                const line = lines[r] || '';
-                const expectedLen = cols * 4 + 1;
+            // UI
+            if (window.isSearching) {
+                // UI panel handled dynamically inside async loop
+            } else {
+                validationPanel.style.display = 'block';
+                validationPanel.className = processedPaths.length > 0 ? 'valid' : 'invalid';
                 
-                if (line.length > expectedLen) {
-                    const trailing = line.substring(expectedLen);
-                    if (trailing.trim().length > 0) {
-                        errors.push({
-                            msg: `Extra illegal characters found at end of line ${r + 1}: '${trailing.trim()}'`,
-                            draw: (ctx, colors) => {
-                                const cy = padding + (r / 2) * cellSize;
-                                ctx.fillStyle = colors.fillItem;
-                                ctx.fillRect(padding + cols * cellSize + 10, cy - 8, 20, 16);
-                            }
-                        });
-                    }
-                }
-
-                if (r % 2 === 0) { 
-                    for (let c = 0; c <= cols; c++) {
-                        const postChar = line.charAt(c * 4);
-                        if (postChar !== 'o') {
-                            const disp = postChar === ' ' ? 'Space' : postChar;
-                            errors.push({
-                                msg: `Illegal character at post position (Row ${r/2}, Col ${c}). Expected 'o', found '${disp}'.`,
-                                draw: (ctx, colors) => {
-                                    ctx.fillStyle = colors.fillItem;
-                                    ctx.fillRect((padding + c * cellSize) - 8, (padding + (r/2) * cellSize) - 8, 16, 16);
-                                }
-                            });
-                        }
-                    }
-                    for (let c = 0; c < cols; c++) {
-                        const hw = line.substring(c * 4 + 1, c * 4 + 4);
-                        if (hw !== '---' && hw !== '   ') {
-                            errors.push({
-                                msg: `Illegal horizontal wall format between Col ${c} and ${c+1}. Found '${hw}'.`,
-                                draw: (ctx, colors) => {
-                                    ctx.fillStyle = colors.fillItem;
-                                    ctx.fillRect(padding + c * cellSize + 8, padding + (r/2) * cellSize - 6, cellSize - 16, 12);
-                                }
-                            });
-                        }
-                    }
-                } else { 
-                    const rowIdx = (r - 1) / 2;
-                    for (let c = 0; c <= cols; c++) {
-                        const vwChar = line.charAt(c * 4);
-                        if (vwChar !== '|' && vwChar !== ' ') {
-                            const disp = vwChar === ' ' ? 'Space' : vwChar;
-                            errors.push({
-                                msg: `Illegal vertical wall character at Row ${rowIdx}, Col ${c}. Found '${disp}'.`,
-                                draw: (ctx, colors) => {
-                                    ctx.fillStyle = colors.fillItem;
-                                    ctx.fillRect(padding + c * cellSize - 6, padding + rowIdx * cellSize + 8, 12, cellSize - 16);
-                                }
-                            });
-                        }
-                    }
-                    for (let c = 0; c < cols; c++) {
-                        const cellStr = line.substring(c * 4 + 1, c * 4 + 4);
-                        if (cellStr !== '   ' && cellStr !== ' S ' && cellStr !== ' G ') {
-                            errors.push({
-                                msg: `Illegal cell content at Row ${rowIdx}, Col ${c}. Found '${cellStr}'.`,
-                                draw: (ctx, colors) => {
-                                    ctx.fillStyle = colors.fillArea;
-                                    ctx.fillRect(padding + c * cellSize + 4, padding + rowIdx * cellSize + 4, cellSize - 8, cellSize - 8);
-                                }
-                            });
-                        }
-                    }
-                }
-            }
-
-            for (let c = 0; c < cols; c++) {
-                if (lines[0].substring(c*4 + 1, c*4 + 4) !== '---') pushMissingWall(`Missing Top perimeter wall (Col ${c})`, c, 0, 'top');
-                if (lines[rows*2].substring(c*4 + 1, c*4 + 4) !== '---') pushMissingWall(`Missing Bottom perimeter wall (Col ${c})`, c, rows-1, 'bottom');
-            }
-            for (let r = 0; r < rows; r++) {
-                if (lines[r*2 + 1].charAt(0) !== '|') pushMissingWall(`Missing Left perimeter wall (Row ${r})`, 0, r, 'left');
-                if (lines[r*2 + 1].charAt(cols*4) !== '|') pushMissingWall(`Missing Right perimeter wall (Row ${r})`, cols-1, r, 'right');
-            }
-
-            for (let r = 0; r < rows; r++) {
-                for (let c = 0; c < cols; c++) {
-                    const cellChar = lines[r*2 + 1].charAt(c*4 + 2);
-                    if (cellChar === 'S') {
-                        startCount++;
-                        if (lines[r*2 + 1].charAt(c*4 + 4) !== '|') pushMissingWall(`Start cell at Row ${r}, Col ${c} is missing an East wall`, c, r, 'right');
-                    } else if (cellChar === 'G') {
-                        goalCount++;
-                    }
-                }
-            }
-
-            const bottomLeftChar = lines[(rows-1)*2 + 1]?.charAt(2);
-            if (bottomLeftChar !== 'S') {
-                errors.push({
-                    msg: `Missing 'S' in the start cell (bottom-left corner).`,
-                    draw: (ctx, colors) => {
-                        ctx.fillStyle = colors.fillArea;
-                        ctx.fillRect(padding, padding + (rows-1) * cellSize, cellSize, cellSize);
-                    }
-                });
-            }
-            if (startCount > 1) {
-                errors.push({ msg: `Found ${startCount} start ('S') cells. There must be exactly 1.`, draw: null });
-            }
-
-            if (goalCount !== 4) {
-                errors.push({ msg: `Found ${goalCount} goal ('G') cells, but there must be exactly 4.`, draw: null });
+                let limitStr = processedPaths.length >= MAX_ROUTES ? " or more" : "";
+                validationPanel.innerHTML = `<strong>${processedPaths.length > 0 ? '✅ Solvable' : '❌ Unreachable'}</strong><br>Found ${processedPaths.length}${limitStr} valid routes to center area.`;
             }
             
-            if (startCount === 1 && goalCount === 4 && !solutionPath) {
-                errors.push({
-                    msg: "No valid path exists from the Start cell to the Goal.",
-                    draw: null
-                });
-            }
-
-            const r1 = Math.floor(rows / 2) - 1;
-            const r2 = Math.floor(rows / 2);
-            const c1 = Math.floor(cols / 2) - 1;
-            const c2 = Math.floor(cols / 2);
-            let centerGoalsValid = false;
-            if (r1 >= 0 && c1 >= 0) {
-                if (lines[r1*2+1]?.charAt(c1*4+2) === 'G' && lines[r1*2+1]?.charAt(c2*4+2) === 'G' && 
-                    lines[r2*2+1]?.charAt(c1*4+2) === 'G' && lines[r2*2+1]?.charAt(c2*4+2) === 'G') {
-                    centerGoalsValid = true;
-                }
-            }
-            if (!centerGoalsValid) {
-                errors.push({
-                    msg: "The 4 goal ('G') cells must be located exactly in the 2x2 center of the maze.",
-                    draw: (ctx, colors) => {
-                        if (r1 >= 0 && c1 >= 0) {
-                            ctx.fillStyle = colors.fillArea;
-                            ctx.fillRect(padding + c1 * cellSize, padding + r1 * cellSize, cellSize*2, cellSize*2);
-                        }
-                    }
-                });
-            }
-
-            for (let r = 0; r <= rows; r++) {
-                for (let c = 0; c <= cols; c++) {
-                    let hasWall = false;
-                    if (r > 0 && lines[r*2 - 1].charAt(c*4) === '|') hasWall = true;
-                    if (r < rows && lines[r*2 + 1].charAt(c*4) === '|') hasWall = true;
-                    if (c > 0 && lines[r*2].substring(c*4 - 3, c*4) === '---') hasWall = true;
-                    if (c < cols && lines[r*2].substring(c*4 + 1, c*4 + 4) === '---') hasWall = true;
-
-                    let isGoalPost = false;
-                    if (r > 0 && r < rows && c > 0 && c < cols) {
-                        if (lines[(r-1)*2+1].charAt((c-1)*4+2) === 'G' && lines[(r-1)*2+1].charAt(c*4+2) === 'G' && 
-                            lines[r*2+1].charAt((c-1)*4+2) === 'G' && lines[r*2+1].charAt(c*4+2) === 'G') {
-                            isGoalPost = true;
-                        }
-                    }
-
-                    if (isGoalPost && hasWall) {
-                        errors.push({
-                            msg: `Illegal wall connected to the Goal Post at Row ${r}, Col ${c}`,
-                            draw: (ctx, colors) => {
-                                ctx.fillStyle = colors.fillItem; 
-                                ctx.beginPath(); ctx.arc(padding + c * cellSize, padding + r * cellSize, 12, 0, 2*Math.PI); ctx.fill();
-                            }
-                        });
-                    } else if (!hasWall && !isGoalPost) {
-                        errors.push({
-                            msg: `Illegal freestanding post at Row ${r}, Col ${c}`,
-                            draw: (ctx, colors) => {
-                                ctx.fillStyle = colors.fillItem; 
-                                ctx.beginPath(); ctx.arc(padding + c * cellSize, padding + r * cellSize, 10, 0, 2*Math.PI); ctx.fill();
-                            }
-                        });
-                    }
-                }
-            }
-
-            function getHighlightColors(idx) {
-                if (activeErrorIndex === -1) {
-                    return { stroke: theme.errStroke, fillArea: theme.errFillArea, fillItem: theme.errFillItem };
-                } else if (activeErrorIndex === idx) {
-                    return { stroke: 'rgba(0, 255, 255, 1.0)', fillArea: 'rgba(0, 255, 255, 0.4)', fillItem: 'rgba(0, 255, 255, 0.8)' }; 
-                } else {
-                    return { stroke: theme.errFadedStroke, fillArea: theme.errFadedFill, fillItem: theme.errFadedFill }; 
-                }
-            }
-
-            errors.forEach((err, idx) => {
-                if (activeErrorIndex !== idx && err.draw) {
-                    err.draw(ctx, getHighlightColors(idx));
-                }
-            });
-            if (activeErrorIndex !== -1 && errors[activeErrorIndex] && errors[activeErrorIndex].draw) {
-                errors[activeErrorIndex].draw(ctx, getHighlightColors(activeErrorIndex));
-            }
-
-            validationPanel.style.display = 'block';
-            if (errors.length === 0) {
-                validationPanel.className = 'valid';
-                validationPanel.innerHTML = `<strong>✅ Maze is Valid</strong><br>All walls, posts, start/goal rules, and formatting conform to standards.`;
-            } else {
-                validationPanel.className = 'invalid';
-                let list = errors.map((e, idx) => {
-                    const activeClass = activeErrorIndex === idx ? 'active-error' : '';
-                    return `<li class="error-item ${activeClass}" onclick="selectError(${idx})">${e.msg}</li>`;
+            if (processedPaths.length > 0) {
+                routesContainer.style.display = 'block';
+                routesList.innerHTML = processedPaths.map((routeObj, idx) => {
+                    return `<div class="route-item ${selectedRouteIndex===idx?'selected':''}" onclick="selectRoute(${idx})">
+                        <span class="route-stats">#${idx + 1} | Length: ${routeObj.length.toFixed(1)} mm | Turns: ${routeObj.turns}</span>
+                        <span class="route-str">${routeObj.str}</span>
+                    </div>`;
                 }).join('');
-                validationPanel.innerHTML = `<strong>❌ Found ${errors.length} Rule Violation(s):</strong><p style="font-size:12px;margin:4px 0 0 0;color:#856404;">Click an error to spotlight it</p><ul class="error-list">${list}</ul>`;
-            }
+
+                // Auto-scroll the list to ensure the currently selected route is visible
+                if (selectedRouteIndex !== -1) {
+                    setTimeout(() => {
+                        const activeItem = routesList.children[selectedRouteIndex];
+                        if (activeItem) {
+                            activeItem.scrollIntoView({ behavior: 'auto', block: 'nearest' });
+                        }
+                    }, 0);
+                }
+
+            } else { routesContainer.style.display = 'none'; }
         }
 
         const urlParams = new URLSearchParams(window.location.search);
         let mazeUrl = urlParams.get('maze');
-        
-        const isEmbed = urlParams.get('embed') === 'true';
-        if (isEmbed) {
-            document.body.classList.add('embed-mode');
-        }
-
+        if (urlParams.get('embed') === 'true') document.body.classList.add('embed-mode');
         if (mazeUrl) {
-            let displayUrl = mazeUrl;
-            
-            if (mazeUrl.includes('github.com') && mazeUrl.includes('/blob/')) {
-                mazeUrl = mazeUrl.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
-            }
-            
-            if (displayUrl.includes('raw.githubusercontent.com')) {
-                let parts = displayUrl.split('/');
-                if (parts.length >= 6) {
-                    parts[2] = 'github.com';
-                    parts.splice(5, 0, 'blob');
-                    displayUrl = parts.join('/');
-                }
-            }
-
-            fetch(mazeUrl)
-                .then(response => {
-                    if (!response.ok) throw new Error("Could not load file");
-                    return response.text();
-                })
-                .then(text => {
-                    mazeInput.value = text;
-                    
-                    fileNameDisplay.innerHTML = `Loaded from URL:<br><a href="${displayUrl}" target="_blank" rel="noopener noreferrer">${displayUrl}</a>`;
-                    fileNameDisplay.style.display = 'block';
-                    
-                    renderMaze();
-                })
-                .catch(err => {
-                    alert("Error loading maze from URL: " + err.message + "\nMake sure it is a valid direct text file link.");
-                });
+            if (mazeUrl.includes('github.com') && mazeUrl.includes('/blob/')) mazeUrl = mazeUrl.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
+            fetch(mazeUrl).then(r => r.text()).then(t => { mazeInput.value = t; fileNameDisplay.innerHTML = `From: <a href="${urlParams.get('maze')}" target="_blank">Source</a>`; fileNameDisplay.style.display = 'block'; renderMaze(); });
         }
     </script>
 </body>
