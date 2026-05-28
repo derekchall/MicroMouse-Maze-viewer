@@ -1,20 +1,32 @@
+Here is the updated `README.md` file, edited to remove the underlying algorithmic jargon and focus entirely on what the features do for the user.
+
+```markdown
 # 🐭 Micromouse Maze Viewer & Validator
 
-A lightweight, browser-based visualizer and strict rule validator for classic ASCII Micromouse mazes. 
+A lightweight, browser-based visualizer, strict rule validator, and advanced route analyzer for classic ASCII Micromouse mazes. 
 
 **🚀[Launch the Live Web App Here](https://derekchall.github.io/MicroMouse-Maze-viewer/)**
 
-![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-323330?style=for-the-badge&logo=javascript&logoColor=F7DF1E)
-
 ## ✨ Features
 
-*   **Instant Rendering:** Converts classic ASCII text grids into high-quality visual mazes instantly.
-*   **Strict Rule Validation:** Automatically scans the maze for competition legality. It checks for intact perimeter walls, exact start (`S`) and goal (`G`) placements, illegal freestanding posts, and correct text formatting.
+### 🏁 Advanced Pathfinding & Routing
+*   **Optimal Path Extraction:** Discovers optimal and alternative routes to the center smoothly in the background without freezing your browser—even on wide-open "expert" mazes.
+*   **True Physical Metrics:** Calculates the exact physical trajectory length (in millimeters) and total turn count for every discovered route, automatically sorting them by efficiency.
+*   **Command Generation:** Generates standard Micromouse movement commands (`F#`, `D#`, `SS90`, `SD45`, `DS45`, `DD90`, `SS180`) for every route.
+*   **Precision Geometric Rendering:** Draws precise physical racing lines directly on the maze canvas, seamlessly mapping exact entry and exit boundary offsets around corner posts.
+*   **Interactive Route Explorer:** Click any route in the generated list to highlight it on the canvas, complete with precise start (green) and end (red) turn markers.
+*   **Background Search UI:** Complex mazes search smoothly in the background with a real-time progress indicator and a "Stop Search" button to let you view early results instantly.
+
+### 🛠️ Validation & Visuals
+*   **Instant Rendering:** Converts classic ASCII text grids into high-quality visual mazes dynamically.
+*   **Strict Rule Validation:** Automatically scans the maze for competition legality, checking for intact perimeter walls, exact start (`S`) and goal (`G`) placements, and illegal freestanding posts.
 *   **Interactive Error Spotlighting:** If an error is found, click on it in the generated list to instantly cast a neon cyan "spotlight" on the exact broken wall, post, or cell on the canvas!
+*   **Dead-end Spotlighting:** Toggle a visual overlay to instantly highlight all dead-end paths.
+*   **Print-Friendly Light Mode:** Toggle between "Dark Maze" (high-contrast black background) and "Light Maze" (pure black-and-white mode, perfect for printing mazes to paper).
+
+### 📂 File Management
 *   **Drag & Drop Support:** Simply drag a `.txt` file from your computer directly into the browser to load it.
 *   **Web Link Importer:** Load mazes directly from other GitHub repositories or URLs using web parameters.
-*   **Print-Friendly Light Mode:** Toggle between "Dark Maze" (high-contrast black background) and "Light Maze" (pure black-and-white mode, perfect for printing mazes to paper).
 
 ## 🛠️ How to Use
 
@@ -114,4 +126,5 @@ For a cleaner look that shows **only the maze canvas**, add `&embed=true` to the
     frameborder="0"
     style="border: 1px solid #ccc; border-radius: 8px;">
 </iframe>
+```
 ```
